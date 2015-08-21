@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     ICGGameKeyCode_SecondaryRightArrow = 'd',
     ICGGameKeyCode_SecondaryUpArrow = 'w',
     ICGGameKeyCode_SecondaryDownArrow = 's',
-    ICGGameKeyCode_SwitchItem = 'q',
+    ICGGameKeyCode_SwitchTool = 'q',
 };
 
 
@@ -60,11 +60,23 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 
 
+@interface ICGGameTool : NSObject
+
+@property (assign) CGFloat      toolDistanceLimit;
+@property (weak) ICGGameItem*   wielder;
+
+-(BOOL) interactWithItem: (ICGGameItem*)otherItem;
+
+@end
+
+
 @interface ICGGameItem : NSObject
 
-@property (assign,nonatomic) NSPoint     pos;
-@property (assign,nonatomic) NSSize      posOffset;
-@property (strong,nonatomic) NSImage*    image;
+@property (assign,nonatomic) NSPoint            pos;
+@property (assign,nonatomic) NSSize             posOffset;
+@property (strong,nonatomic) NSImage*           image;
+@property (strong,nonatomic) ICGGameTool*       tool;
+@property (strong,nonatomic) NSMutableArray*    tools;
 
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
@@ -72,7 +84,47 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 @end
 
+
+
+@implementation ICGGameTool
+
+-(id)   init
+{
+    self = [super init];
+    if( self )
+    {
+        self.toolDistanceLimit = 30.0;
+    }
+    
+    return self;
+}
+
+
+-(BOOL) interactWithItem: (ICGGameItem*)otherItem
+{
+    NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
+    return YES;
+}
+
+@end
+
+
+
 @implementation ICGGameItem
+
+-(id)   init
+{
+    self = [super init];
+    if( self )
+    {
+        self.tools = [NSMutableArray new];
+        self.image = [NSImage imageNamed: NSImageNameApplicationIcon];
+        self.posOffset = NSMakeSize( truncf(self.image.size.width /2), 0 );
+    }
+    
+    return self;
+}
+
 
 -(BOOL) mouseDownAtPoint: (NSPoint)pos
 {
@@ -90,17 +142,18 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems
 {
-    if( nearbyItems.count < 1 )
+    if( nearbyItems.count < 1 || self.tool == nil )
         return NO;
     
-    BOOL       interacted = NO;
+    BOOL        interacted = NO;
+    CGFloat     toolDistanceLimit = self.tool.toolDistanceLimit;
     for( ICGGameItem* currItem in nearbyItems )
     {
         CGFloat     distance = [self distanceToItem: currItem];
-        if( distance < 30 )
+        if( distance < toolDistanceLimit )
         {
             NSLog( @"%@ interacting with item %@ (distance %f)", self.image.name, currItem.image.name, distance );
-            interacted = YES;
+            interacted |= [self.tool interactWithItem: currItem];
         }
     }
     
@@ -135,6 +188,10 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         self.player.image = [NSImage imageNamed: NSImageNameUser];
         NSSize      imgSize = self.player.image.size;
         self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        ICGGameTool*    tool = [ICGGameTool new];
+        tool.wielder = self.player;
+        [self.player.tools addObject: tool];
+        self.player.tool = tool;
         [self.items addObject: self.player];
         
         ICGGameItem*    obstacle = [ICGGameItem new];
@@ -263,9 +320,9 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
             if( !keyEvt.isRepeat )
                 [self interact];
             break;
-        case ICGGameKeyCode_SwitchItem:
+        case ICGGameKeyCode_SwitchTool:
             if( !keyEvt.isRepeat )
-                [self switchItem];
+                [self switchTool];
             break;
     }
 }
@@ -372,9 +429,18 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) switchItem
+-(void) switchTool
 {
-    NSLog(@"Switch Item");
+    NSInteger   idx = [self.player.tools indexOfObject: self.player.tool];
+    idx++;
+    if( idx >= self.player.tools.count )
+    {
+        idx = 0;
+    }
+    self.player.tool = self.player.tools[idx];
+    self.player.tool.wielder = self.player;
+    
+    NSLog( @"New tool is %@", self.player.tool );
 }
 
 
