@@ -21,7 +21,13 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     ICGGameKeyCode_LeftArrow = NSLeftArrowFunctionKey,
     ICGGameKeyCode_RightArrow = NSRightArrowFunctionKey,
     ICGGameKeyCode_UpArrow = NSUpArrowFunctionKey,
-    ICGGameKeyCode_DownArrow = NSDownArrowFunctionKey
+    ICGGameKeyCode_DownArrow = NSDownArrowFunctionKey,
+    ICGGameKeyCode_Interact = 'e',
+    ICGGameKeyCode_SecondaryLeftArrow = 'a',
+    ICGGameKeyCode_SecondaryRightArrow = 'd',
+    ICGGameKeyCode_SecondaryUpArrow = 'w',
+    ICGGameKeyCode_SecondaryDownArrow = 's',
+    ICGGameKeyCode_SwitchItem = 'q',
 };
 
 
@@ -134,7 +140,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     [self doBackwards: YES forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
     {
         [currItem.image drawInRect: imgBox];
-        NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
+        //NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
         
         return YES;
     }];
@@ -155,7 +161,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     }];
     [self setNeedsDisplay: YES];
     
-    NSLog(@"Player coordinate %f,%f image size %f,%f", self.player.pos.x, self.player.pos.y, self.player.image.size.width, self.player.image.size.height);
+    //NSLog(@"Player coordinate %f,%f image size %f,%f", self.player.pos.x, self.player.pos.y, self.player.image.size.width, self.player.image.size.height);
 }
 
 
@@ -191,21 +197,33 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) handleGameKeyDown: (ICGGameKeyEvent*)keyEvt
 {
-    NSLog(@"Key %ld pressed%s.", keyEvt.keyCode, keyEvt.isRepeat?" again":"");
+    //NSLog(@"Key %ld pressed%s.", keyEvt.keyCode, keyEvt.isRepeat?" again":"");
     
     switch( keyEvt.keyCode )
     {
         case ICGGameKeyCode_LeftArrow:
-            [self moveLeft: nil];
+        case ICGGameKeyCode_SecondaryLeftArrow:
+            [self moveLeft];
             break;
         case ICGGameKeyCode_RightArrow:
-            [self moveRight: nil];
+        case ICGGameKeyCode_SecondaryRightArrow:
+            [self moveRight];
             break;
         case ICGGameKeyCode_UpArrow:
-            [self moveUp: nil];
+        case ICGGameKeyCode_SecondaryUpArrow:
+            [self moveUp];
             break;
         case ICGGameKeyCode_DownArrow:
-            [self moveDown: nil];
+        case ICGGameKeyCode_SecondaryDownArrow:
+            [self moveDown];
+            break;
+        case ICGGameKeyCode_Interact:
+            if( !keyEvt.isRepeat )
+                [self interact];
+            break;
+        case ICGGameKeyCode_SwitchItem:
+            if( !keyEvt.isRepeat )
+                [self switchItem];
             break;
     }
 }
@@ -213,7 +231,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) handleGameKeyUp: (ICGGameKeyEvent*)keyEvt
 {
-    NSLog(@"Key %ld released", keyEvt.keyCode);
+    //NSLog(@"Key %ld released", keyEvt.keyCode);
 }
 
 
@@ -225,7 +243,6 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         return;
     
     ICGGameKeyEvent*    keyEvent = [ICGGameKeyEvent new];
-    unichar             theCharacter =
     keyEvent.keyCode = [theEvent.characters characterAtIndex: 0];
     NSTimeInterval      nextFireTime = [NSDate timeIntervalSinceReferenceDate] +KEY_REPEAT_THRESHOLD;
     keyEvent.nextTimeToSend = nextFireTime;
@@ -289,7 +306,19 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) moveLeft:(id)sender
+-(void) interact
+{
+    NSLog(@"Interact");
+}
+
+
+-(void) switchItem
+{
+    NSLog(@"Switch Item");
+}
+
+
+-(void) moveLeft
 {
     NSPoint pos = self.player.pos;
     pos.x -= 10;
@@ -298,7 +327,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) moveRight:(id)sender
+-(void) moveRight
 {
     NSPoint pos = self.player.pos;
     pos.x += 10;
@@ -307,7 +336,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) moveUp:(id)sender
+-(void) moveUp
 {
     NSPoint pos = self.player.pos;
     pos.y += 10;
@@ -316,7 +345,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) moveDown:(id)sender
+-(void) moveDown
 {
     NSPoint pos = self.player.pos;
     pos.y -= 10;
