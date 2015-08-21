@@ -89,6 +89,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 @property (strong,nonatomic) ICGGameTool*       tool;
 @property (strong,nonatomic) NSMutableArray*    tools;
 @property (strong,nonatomic) ICGGameTool*       talkTool;
+@property (assign,nonatomic) BOOL               isInteractible;
 
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
@@ -116,6 +117,22 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 {
     NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
     return YES;
+}
+
+
+-(NSArray*) filterNearbyItems: (NSArray*)nearbyItems
+{
+    NSMutableArray* filteredItems = [NSMutableArray array];
+    CGFloat         toolDistanceLimit = self.toolDistanceLimit;
+    for( ICGGameItem* currItem in nearbyItems )
+    {
+        CGFloat     distance = [self.wielder distanceToItem: currItem];
+        if( distance < toolDistanceLimit )
+        {
+            [filteredItems addObject: currItem];
+        }
+    }
+    return filteredItems;
 }
 
 @end
@@ -159,16 +176,15 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     
     if( !inTool )
         inTool = self.tool;
+    
+    inTool.wielder = self;
+    nearbyItems = [inTool filterNearbyItems: nearbyItems];
+    
     BOOL        interacted = NO;
-    CGFloat     toolDistanceLimit = inTool.toolDistanceLimit;
     for( ICGGameItem* currItem in nearbyItems )
     {
-        CGFloat     distance = [self distanceToItem: currItem];
-        if( distance < toolDistanceLimit )
-        {
-            NSLog( @"%@ interacting with item %@ (distance %f)", self.image.name, currItem.image.name, distance );
-            interacted |= [inTool interactWithItem: currItem];
-        }
+        NSLog( @"%@ interacting with item %@", self.image.name, currItem.image.name );
+        interacted |= [inTool interactWithItem: currItem];
     }
     
     if( !interacted )
@@ -251,8 +267,22 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 {
     [self doBackwards: YES forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
     {
+        if( currItem.isInteractible )
+        {
+            [NSGraphicsContext saveGraphicsState];
+            NSShadow*   shadow = [NSShadow new];
+            shadow.shadowBlurRadius = 8.0;
+            shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.4 blue: 0.4 alpha: 0.9];
+            [shadow set];
+        }
+        
         [currItem.image drawInRect: imgBox];
         //NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
+
+        if( currItem.isInteractible )
+        {
+            [NSGraphicsContext restoreGraphicsState];
+        }
         
         return YES;
     }];
@@ -271,6 +301,24 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         else
             return NSOrderedSame;
     }];
+    
+    NSArray*    nearbyItems = self.nearbyItems;
+    for( ICGGameItem* currItem in nearbyItems )
+        currItem.isInteractible = NO;
+    for( ICGGameTool* currTool in self.player.tools )
+    {
+        NSArray*    interactibleItems = [currTool filterNearbyItems: nearbyItems];
+        for( ICGGameItem* currItem in interactibleItems )
+            currItem.isInteractible = YES;
+    }
+    
+    if( self.player.talkTool )
+    {
+        NSArray*    interactibleItems = [self.player.talkTool filterNearbyItems: nearbyItems];
+        for( ICGGameItem* currItem in interactibleItems )
+            currItem.isInteractible = YES;
+    }
+    
     [self setNeedsDisplay: YES];
     
     //NSLog(@"Player coordinate %f,%f image size %f,%f", self.player.pos.x, self.player.pos.y, self.player.image.size.width, self.player.image.size.height);
@@ -477,7 +525,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) interactWithTool: (ICGGameTool*)inTool
+-(NSMutableArray*)  nearbyItems
 {
     NSMutableArray* nearbyItems = [self.items mutableCopy];
     [nearbyItems removeObject: self.player];
@@ -493,8 +541,13 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         else
             return NSOrderedSame;
     }];
-    
-    [self.player interactWithNearbyItems: nearbyItems tool: inTool];
+    return nearbyItems;
+}
+
+
+-(void) interactWithTool: (ICGGameTool*)inTool
+{
+    [self.player interactWithNearbyItems: self.nearbyItems tool: inTool];
 }
 
 
