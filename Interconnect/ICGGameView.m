@@ -66,7 +66,9 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 @property (assign,nonatomic) NSSize      posOffset;
 @property (strong,nonatomic) NSImage*    image;
 
--(BOOL) mouseDownAtPoint: (NSPoint)pos;
+-(BOOL)     mouseDownAtPoint: (NSPoint)pos;
+-(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
+-(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems;
 
 @end
 
@@ -75,6 +77,37 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 -(BOOL) mouseDownAtPoint: (NSPoint)pos
 {
     return NO;
+}
+
+
+-(CGFloat)  distanceToItem: (ICGGameItem*)otherItem
+{
+    CGFloat xdiff = self.pos.x -otherItem.pos.x;
+    CGFloat ydiff = self.pos.y -otherItem.pos.y;
+    return sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+}
+
+
+-(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems
+{
+    if( nearbyItems.count < 1 )
+        return NO;
+    
+    BOOL       interacted = NO;
+    for( ICGGameItem* currItem in nearbyItems )
+    {
+        CGFloat     distance = [self distanceToItem: currItem];
+        if( distance < 30 )
+        {
+            NSLog( @"%@ interacting with item %@ (distance %f)", self.image.name, currItem.image.name, distance );
+            interacted = YES;
+        }
+    }
+    
+    if( !interacted )
+        NSLog( @"Nothing near enough to %@ to interact with.", self.image.name );
+    
+    return interacted;
 }
 
 @end
@@ -320,7 +353,22 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) interact
 {
-    NSLog(@"Interact");
+    NSMutableArray* nearbyItems = [self.items mutableCopy];
+    [nearbyItems removeObject: self.player];
+    [nearbyItems sortUsingComparator: ^(id obj1, id obj2)
+    {
+        CGFloat obj1diff = [self.player distanceToItem: obj1];
+        CGFloat obj2diff = [self.player distanceToItem: obj2];
+        CGFloat diff = obj1diff - obj2diff;
+        if( diff < 0 )
+            return NSOrderedAscending;
+        else if( diff > 0 )
+            return NSOrderedDescending;
+        else
+            return NSOrderedSame;
+    }];
+    
+    [self.player interactWithNearbyItems: nearbyItems];
 }
 
 
