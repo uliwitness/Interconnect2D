@@ -12,6 +12,7 @@
 		55069C0C1B813CBC00CDD0DB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55069C0B1B813CBC00CDD0DB /* Images.xcassets */; };
 		55069C0F1B813CBC00CDD0DB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55069C0D1B813CBC00CDD0DB /* MainMenu.xib */; };
 		55069C1B1B813CBC00CDD0DB /* InterconnectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C1A1B813CBC00CDD0DB /* InterconnectTests.m */; };
+		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,8 @@
 		55069C141B813CBC00CDD0DB /* InterconnectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InterconnectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		55069C191B813CBC00CDD0DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55069C1A1B813CBC00CDD0DB /* InterconnectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InterconnectTests.m; sourceTree = "<group>"; };
+		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
+		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +81,8 @@
 			children = (
 				55069C061B813CBC00CDD0DB /* AppDelegate.h */,
 				55069C071B813CBC00CDD0DB /* AppDelegate.m */,
+				55A82B451B86A9FE00E21718 /* ICGGameView.h */,
+				55A82B461B86A9FE00E21718 /* ICGGameView.m */,
 				55069C0B1B813CBC00CDD0DB /* Images.xcassets */,
 				55069C0D1B813CBC00CDD0DB /* MainMenu.xib */,
 				55069C041B813CBC00CDD0DB /* Supporting Files */,
@@ -210,6 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */,
 				55069C0A1B813CBC00CDD0DB /* main.m in Sources */,
 				55069C081B813CBC00CDD0DB /* AppDelegate.m in Sources */,
 			);
@@ -401,6 +407,7 @@
 				55069C201B813CBC00CDD0DB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		55069C211B813CBC00CDD0DB /* Build configuration list for PBXNativeTarget "InterconnectTests" */ = {
 			isa = XCConfigurationList;
@@ -409,6 +416,7 @@
 				55069C231B813CBC00CDD0DB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

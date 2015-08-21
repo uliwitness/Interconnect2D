@@ -10,13 +10,15 @@
 
 @interface AppDelegate ()
 
-@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSWindow  *window;
+@property (strong) NSMutableArray   *tiles;
+
 @end
 
 @implementation AppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

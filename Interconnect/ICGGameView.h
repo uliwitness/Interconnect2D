@@ -8,6 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class ICGGameItem;
+
 @interface ICGGameView : NSView
+
+@property (retain,nonatomic) NSMutableArray*        items;
+@property (retain,nonatomic) ICGGameItem*           player;
 
 @end
