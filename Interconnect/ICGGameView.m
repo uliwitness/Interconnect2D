@@ -12,8 +12,9 @@
 // The bigger this number, the more subtle the perspective effect:
 #define PERSPECTIVE_SCALE_MULTIPLIER        200
 
-#define KEY_REPEAT_THRESHOLD                0.25     // seconds to wait before sending first key repeat.
-#define KEY_REPEAT_INTERVAL                 0.15    // Seconds to wait between each key repeat.
+#define STEP_SIZE                           5
+#define KEY_REPEAT_THRESHOLD                0.15     // seconds to wait before sending first key repeat.
+#define KEY_REPEAT_INTERVAL                 0.05    // Seconds to wait between each key repeat.
 
 
 typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
@@ -104,7 +105,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         [self.items addObject: self.player];
         
         ICGGameItem*    obstacle = [ICGGameItem new];
-        obstacle.pos = NSMakePoint( 250, 191 );
+        obstacle.pos = NSMakePoint( 250, 120 );
         obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
         imgSize = obstacle.image.size;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
@@ -245,37 +246,40 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) keyDown:(NSEvent *)theEvent
 {
-    if( theEvent.characters.length < 1 )
-        return;
     if( theEvent.isARepeat )
         return;
     
-    ICGGameKeyEvent*    keyEvent = [ICGGameKeyEvent new];
-    keyEvent.keyCode = [theEvent.characters characterAtIndex: 0];
-    NSTimeInterval      nextFireTime = [NSDate timeIntervalSinceReferenceDate] +KEY_REPEAT_THRESHOLD;
-    keyEvent.nextTimeToSend = nextFireTime;
-    keyEvent.isRepeat = NO;
-    
-    if( [self.pressedKeys containsObject: keyEvent] )
-        [self.pressedKeys removeObject: keyEvent];
-    [self.pressedKeys addObject: keyEvent];
-    
-    if( self.keyRepeatTimer.fireDate == [NSDate distantFuture]
-        || nextFireTime < self.keyRepeatTimer.fireDate.timeIntervalSinceReferenceDate )
+    NSInteger       count = theEvent.charactersIgnoringModifiers.length;
+    for( NSInteger x = 0; x < count; x++ )
     {
-        self.keyRepeatTimer.fireDate = [NSDate dateWithTimeIntervalSinceReferenceDate: nextFireTime];
+        unichar             theCharacter = [theEvent.charactersIgnoringModifiers characterAtIndex: x];
+        ICGGameKeyEvent*    keyEvent = [ICGGameKeyEvent new];
+        keyEvent.keyCode = theCharacter;
+        NSTimeInterval      nextFireTime = [NSDate timeIntervalSinceReferenceDate] +KEY_REPEAT_THRESHOLD;
+        keyEvent.nextTimeToSend = nextFireTime;
+        keyEvent.isRepeat = NO;
+        
+        if( [self.pressedKeys containsObject: keyEvent] )
+            [self.pressedKeys removeObject: keyEvent];
+        [self.pressedKeys addObject: keyEvent];
+        
+        if( self.keyRepeatTimer.fireDate == [NSDate distantFuture]
+            || nextFireTime < self.keyRepeatTimer.fireDate.timeIntervalSinceReferenceDate )
+        {
+            self.keyRepeatTimer.fireDate = [NSDate dateWithTimeIntervalSinceReferenceDate: nextFireTime];
+        }
+        
+        [self handleGameKeyDown: keyEvent];
     }
-    
-    [self handleGameKeyDown: keyEvent];
 }
 
 
 -(void) keyUp:(NSEvent *)theEvent
 {
-    NSInteger       count = theEvent.characters.length;
+    NSInteger       count = theEvent.charactersIgnoringModifiers.length;
     for( NSInteger x = 0; x < count; x++ )
     {
-        unichar theCharacter = [theEvent.characters characterAtIndex: x];
+        unichar theCharacter = [theEvent.charactersIgnoringModifiers characterAtIndex: x];
         for( ICGGameKeyEvent* currEvent in self.pressedKeys )
         {
             if( currEvent.keyCode == theCharacter )
@@ -326,39 +330,56 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) moveLeft
+-(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y
 {
     NSPoint pos = self.player.pos;
-    pos.x -= 10;
+    pos.x += x;
+    pos.y += y;
+
+    for( ICGGameItem* currItem in self.items )
+    {
+        if( currItem == self.player )
+            continue;
+        
+        if( pos.y > (currItem.pos.y -ceilf(STEP_SIZE /2))
+            && pos.y < (currItem.pos.y +ceilf(STEP_SIZE /2)) )
+        {
+            if( pos.x >= (currItem.pos.x -currItem.posOffset.width)
+                && pos.x <= (currItem.pos.x -currItem.posOffset.width +currItem.image.size.width) )
+            {
+                return currItem;
+            }
+        }
+    }
+    
     self.player.pos = pos;
     [self refreshItemDisplay];
+    
+    return nil;
+}
+
+
+-(void) moveLeft
+{
+    [self moveByX: -STEP_SIZE y: 0];
 }
 
 
 -(void) moveRight
 {
-    NSPoint pos = self.player.pos;
-    pos.x += 10;
-    self.player.pos = pos;
-    [self refreshItemDisplay];
+    [self moveByX: STEP_SIZE y: 0];
 }
 
 
 -(void) moveUp
 {
-    NSPoint pos = self.player.pos;
-    pos.y += 10;
-    self.player.pos = pos;
-    [self refreshItemDisplay];
+    [self moveByX: 0 y: STEP_SIZE];
 }
 
 
 -(void) moveDown
 {
-    NSPoint pos = self.player.pos;
-    pos.y -= 10;
-    self.player.pos = pos;
-    [self refreshItemDisplay];
+    [self moveByX: 0 y: -STEP_SIZE];
 }
 
 @end
