@@ -12,8 +12,8 @@
 // The bigger this number, the more subtle the perspective effect:
 #define PERSPECTIVE_SCALE_MULTIPLIER        200
 
-#define KEY_REPEAT_THRESHOLD                0.5     // seconds to wait before sending first key repeat.
-#define KEY_REPEAT_INTERVAL                 0.25    // Seconds to wait between each key repeat.
+#define KEY_REPEAT_THRESHOLD                0.25     // seconds to wait before sending first key repeat.
+#define KEY_REPEAT_INTERVAL                 0.15    // Seconds to wait between each key repeat.
 
 
 typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
