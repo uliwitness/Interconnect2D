@@ -29,6 +29,17 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     ICGGameKeyCode_SecondaryUpArrow = 'w',
     ICGGameKeyCode_SecondaryDownArrow = 's',
     ICGGameKeyCode_SwitchTool = 'q',
+    ICGGameKeyCode_Talk = 't',
+    ICGGameKeyCode_Tool1 = '1',
+    ICGGameKeyCode_Tool2 = '2',
+    ICGGameKeyCode_Tool3 = '3',
+    ICGGameKeyCode_Tool4 = '4',
+    ICGGameKeyCode_Tool5 = '5',
+    ICGGameKeyCode_Tool6 = '6',
+    ICGGameKeyCode_Tool7 = '7',
+    ICGGameKeyCode_Tool8 = '8',
+    ICGGameKeyCode_Tool9 = '9',
+    ICGGameKeyCode_Tool0 = '0',
 };
 
 
@@ -77,10 +88,11 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 @property (strong,nonatomic) NSImage*           image;
 @property (strong,nonatomic) ICGGameTool*       tool;
 @property (strong,nonatomic) NSMutableArray*    tools;
+@property (strong,nonatomic) ICGGameTool*       talkTool;
 
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
--(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems;
+-(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;
 
 @end
 
@@ -140,20 +152,22 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems
+-(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool
 {
-    if( nearbyItems.count < 1 || self.tool == nil )
+    if( nearbyItems.count < 1 || (inTool == nil && self.tool == nil) )
         return NO;
     
+    if( !inTool )
+        inTool = self.tool;
     BOOL        interacted = NO;
-    CGFloat     toolDistanceLimit = self.tool.toolDistanceLimit;
+    CGFloat     toolDistanceLimit = inTool.toolDistanceLimit;
     for( ICGGameItem* currItem in nearbyItems )
     {
         CGFloat     distance = [self distanceToItem: currItem];
         if( distance < toolDistanceLimit )
         {
             NSLog( @"%@ interacting with item %@ (distance %f)", self.image.name, currItem.image.name, distance );
-            interacted |= [self.tool interactWithItem: currItem];
+            interacted |= [inTool interactWithItem: currItem];
         }
     }
     
@@ -190,8 +204,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         ICGGameTool*    tool = [ICGGameTool new];
         tool.wielder = self.player;
-        [self.player.tools addObject: tool];
-        self.player.tool = tool;
+        self.player.talkTool = tool;
         [self.items addObject: self.player];
         
         ICGGameItem*    obstacle = [ICGGameItem new];
@@ -316,13 +329,69 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         case ICGGameKeyCode_SecondaryDownArrow:
             [self moveDown];
             break;
+        
         case ICGGameKeyCode_Interact:
             if( !keyEvt.isRepeat )
-                [self interact];
+                [self interactWithTool: nil];
             break;
+        
         case ICGGameKeyCode_SwitchTool:
             if( !keyEvt.isRepeat )
                 [self switchTool];
+            break;
+            
+        case ICGGameKeyCode_Talk:
+            if( !keyEvt.isRepeat && self.player.talkTool != nil )
+                [self interactWithTool: self.player.talkTool];
+            break;
+        case ICGGameKeyCode_Tool1:
+            if( !keyEvt.isRepeat && self.player.tools.count > 0 )
+                [self interactWithTool: self.player.tools[0]];
+            break;
+
+        case ICGGameKeyCode_Tool2:
+            if( !keyEvt.isRepeat && self.player.tools.count > 1 )
+                [self interactWithTool: self.player.tools[1]];
+            break;
+
+        case ICGGameKeyCode_Tool3:
+            if( !keyEvt.isRepeat && self.player.tools.count > 2 )
+                [self interactWithTool: self.player.tools[2]];
+            break;
+
+        case ICGGameKeyCode_Tool4:
+            if( !keyEvt.isRepeat && self.player.tools.count > 3 )
+                [self interactWithTool: self.player.tools[3]];
+            break;
+
+        case ICGGameKeyCode_Tool5:
+            if( !keyEvt.isRepeat && self.player.tools.count > 4 )
+                [self interactWithTool: self.player.tools[4]];
+            break;
+
+        case ICGGameKeyCode_Tool6:
+            if( !keyEvt.isRepeat && self.player.tools.count > 5 )
+                [self interactWithTool: self.player.tools[5]];
+            break;
+
+        case ICGGameKeyCode_Tool7:
+            if( !keyEvt.isRepeat && self.player.tools.count > 6 )
+                [self interactWithTool: self.player.tools[6]];
+            break;
+
+        case ICGGameKeyCode_Tool8:
+            if( !keyEvt.isRepeat && self.player.tools.count > 7 )
+                [self interactWithTool: self.player.tools[7]];
+            break;
+
+        case ICGGameKeyCode_Tool9:
+            if( !keyEvt.isRepeat && self.player.tools.count > 8 )
+                [self interactWithTool: self.player.tools[8]];
+            break;
+
+        case ICGGameKeyCode_Tool0:
+            if( !keyEvt.isRepeat && self.player.tools.count > 9 )
+                [self interactWithTool: self.player.tools[9]];
             break;
     }
 }
@@ -408,7 +477,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 }
 
 
--(void) interact
+-(void) interactWithTool: (ICGGameTool*)inTool
 {
     NSMutableArray* nearbyItems = [self.items mutableCopy];
     [nearbyItems removeObject: self.player];
@@ -425,7 +494,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
             return NSOrderedSame;
     }];
     
-    [self.player interactWithNearbyItems: nearbyItems];
+    [self.player interactWithNearbyItems: nearbyItems tool: inTool];
 }
 
 
@@ -433,10 +502,11 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 {
     NSInteger   idx = [self.player.tools indexOfObject: self.player.tool];
     idx++;
-    if( idx >= self.player.tools.count )
-    {
-        idx = 0;
-    }
+    NSInteger   count = self.player.tools.count;
+    if( count < 1 )
+        return;
+    if( idx >= count )  // Current was last tool?
+        idx = 0;    // Wrap around.
     self.player.tool = self.player.tools[idx];
     self.player.tool.wielder = self.player;
     
