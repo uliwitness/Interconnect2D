@@ -102,6 +102,14 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
         NSSize      imgSize = self.player.image.size;
         self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         [self.items addObject: self.player];
+        
+        ICGGameItem*    obstacle = [ICGGameItem new];
+        obstacle.pos = NSMakePoint( 250, 191 );
+        obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
+        imgSize = obstacle.image.size;
+        obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        [self.items addObject: obstacle];
+        
         [self refreshItemDisplay];
         self.keyRepeatTimer = [NSTimer scheduledTimerWithTimeInterval: 0.01 target: self selector: @selector(checkForKeyRepeats:) userInfo: nil repeats: YES];
         [self.keyRepeatTimer setFireDate: [NSDate distantFuture]];
