@@ -7,6 +7,8 @@
 //
 
 #import "ICGGameView.h"
+#import "ICGGameTool.h"
+#import "ICGGameItem.h"
 
 
 // The bigger this number, the more subtle the perspective effect:
@@ -17,37 +19,9 @@
 #define KEY_REPEAT_INTERVAL                 0.05    // Seconds to wait between each key repeat.
 
 
-typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
-{
-    ICGGameKeyCode_LeftArrow = NSLeftArrowFunctionKey,
-    ICGGameKeyCode_RightArrow = NSRightArrowFunctionKey,
-    ICGGameKeyCode_UpArrow = NSUpArrowFunctionKey,
-    ICGGameKeyCode_DownArrow = NSDownArrowFunctionKey,
-    ICGGameKeyCode_Interact = 'e',
-    ICGGameKeyCode_SecondaryLeftArrow = 'a',
-    ICGGameKeyCode_SecondaryRightArrow = 'd',
-    ICGGameKeyCode_SecondaryUpArrow = 'w',
-    ICGGameKeyCode_SecondaryDownArrow = 's',
-    ICGGameKeyCode_SwitchTool = 'q',
-    ICGGameKeyCode_Talk = 't',
-    ICGGameKeyCode_Tool1 = '1',
-    ICGGameKeyCode_Tool2 = '2',
-    ICGGameKeyCode_Tool3 = '3',
-    ICGGameKeyCode_Tool4 = '4',
-    ICGGameKeyCode_Tool5 = '5',
-    ICGGameKeyCode_Tool6 = '6',
-    ICGGameKeyCode_Tool7 = '7',
-    ICGGameKeyCode_Tool8 = '8',
-    ICGGameKeyCode_Tool9 = '9',
-    ICGGameKeyCode_Tool0 = '0',
-};
+@interface ICGGameKeyEvent ()
 
-
-@interface ICGGameKeyEvent : NSObject
-
-@property ICGGameKeyCode    keyCode;
 @property NSTimeInterval    nextTimeToSend;
-@property BOOL              isRepeat;
 
 @end
 
@@ -70,130 +44,6 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 @end
 
 
-
-@interface ICGGameTool : NSObject
-
-@property (assign) CGFloat      toolDistanceLimit;
-@property (weak) ICGGameItem*   wielder;
-
--(BOOL) interactWithItem: (ICGGameItem*)otherItem;
-
-@end
-
-
-@interface ICGGameItem : NSObject
-
-@property (assign,nonatomic) NSPoint            pos;
-@property (assign,nonatomic) NSSize             posOffset;
-@property (strong,nonatomic) NSImage*           image;
-@property (strong,nonatomic) ICGGameTool*       tool;
-@property (strong,nonatomic) NSMutableArray*    tools;
-@property (strong,nonatomic) ICGGameTool*       talkTool;
-@property (assign,nonatomic) BOOL               isInteractible;
-
--(BOOL)     mouseDownAtPoint: (NSPoint)pos;
--(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
--(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;
-
-@end
-
-
-
-@implementation ICGGameTool
-
--(id)   init
-{
-    self = [super init];
-    if( self )
-    {
-        self.toolDistanceLimit = 30.0;
-    }
-    
-    return self;
-}
-
-
--(BOOL) interactWithItem: (ICGGameItem*)otherItem
-{
-    NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
-    return YES;
-}
-
-
--(NSArray*) filterNearbyItems: (NSArray*)nearbyItems
-{
-    NSMutableArray* filteredItems = [NSMutableArray array];
-    CGFloat         toolDistanceLimit = self.toolDistanceLimit;
-    for( ICGGameItem* currItem in nearbyItems )
-    {
-        CGFloat     distance = [self.wielder distanceToItem: currItem];
-        if( distance < toolDistanceLimit )
-        {
-            [filteredItems addObject: currItem];
-        }
-    }
-    return filteredItems;
-}
-
-@end
-
-
-
-@implementation ICGGameItem
-
--(id)   init
-{
-    self = [super init];
-    if( self )
-    {
-        self.tools = [NSMutableArray new];
-        self.image = [NSImage imageNamed: NSImageNameApplicationIcon];
-        self.posOffset = NSMakeSize( truncf(self.image.size.width /2), 0 );
-    }
-    
-    return self;
-}
-
-
--(BOOL) mouseDownAtPoint: (NSPoint)pos
-{
-    return NO;
-}
-
-
--(CGFloat)  distanceToItem: (ICGGameItem*)otherItem
-{
-    CGFloat xdiff = self.pos.x -otherItem.pos.x;
-    CGFloat ydiff = self.pos.y -otherItem.pos.y;
-    return sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
-}
-
-
--(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool
-{
-    if( nearbyItems.count < 1 || (inTool == nil && self.tool == nil) )
-        return NO;
-    
-    if( !inTool )
-        inTool = self.tool;
-    
-    inTool.wielder = self;
-    nearbyItems = [inTool filterNearbyItems: nearbyItems];
-    
-    BOOL        interacted = NO;
-    for( ICGGameItem* currItem in nearbyItems )
-    {
-        NSLog( @"%@ interacting with item %@", self.image.name, currItem.image.name );
-        interacted |= [inTool interactWithItem: currItem];
-    }
-    
-    if( !interacted )
-        NSLog( @"Nothing near enough to %@ to interact with.", self.image.name );
-    
-    return interacted;
-}
-
-@end
 
 
 @interface ICGGameView ()
