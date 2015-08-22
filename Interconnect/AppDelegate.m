@@ -25,6 +25,10 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    if( ![self.gameView readFromFile: @"GameDump.data"] )
+    {
+        NSLog(@"Generating sample file.");
+        
         ICGActor    *   thePlayer = [ICGActor new];
         thePlayer.owningView = self.gameView;
         thePlayer.pos = NSMakePoint( 600, 200 );
@@ -49,6 +53,9 @@
         [self.gameView.items addObject: obstacle];
         
         [self.gameView refreshItemDisplay];
+        
+        [self.gameView writeToFile: @"GameDump.data"];
+    }
 
 }
 

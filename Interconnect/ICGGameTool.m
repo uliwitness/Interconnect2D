@@ -24,6 +24,26 @@
 }
 
 
+-(id)   initWithCoder: (NSCoder *)aDecoder
+{
+    self = [super init];
+    if( self )
+    {
+        self.toolDistanceLimit = [aDecoder decodeDoubleForKey: @"ICGToolDistanceLimit"];
+        self.wielder = [aDecoder decodeObjectForKey: @"ICGWielder"];
+    }
+    
+    return self;
+}
+
+
+-(void) encodeWithCoder: (NSCoder *)aCoder
+{
+    [aCoder encodeDouble: self.toolDistanceLimit forKey: @"ICGToolDistanceLimit"];
+    [aCoder encodeObject: self.wielder forKey: @"ICGWielder"];
+}
+
+
 -(BOOL) interactWithItem: (ICGGameItem*)otherItem
 {
     //NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );

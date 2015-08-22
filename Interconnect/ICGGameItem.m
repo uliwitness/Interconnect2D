@@ -29,6 +29,52 @@
 }
 
 
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if( self )
+    {
+        self.tools = [aDecoder decodeObjectForKey: @"ICGTools"];
+        self.tool = [aDecoder decodeObjectForKey: @"ICGTool"];
+        self.defaultTool = [aDecoder decodeObjectForKey: @"ICGDefaultTool"];
+        self.talkTool = [aDecoder decodeObjectForKey: @"ICGTalkTool"];
+        self.balloonText = [aDecoder decodeObjectForKey: @"ICGBalloonText"];
+        self.animation = [aDecoder decodeObjectForKey: @"ICGAnimation"];
+        if( self.animation && self.animation.frames.count > 0 )
+            self.image = self.animation.frames[0];
+        NSSize  po;
+        po.width = [aDecoder decodeDoubleForKey: @"ICGPosOffsetWidth"];
+        po.height = [aDecoder decodeDoubleForKey: @"ICGPosOffsetHeight"];
+        self.posOffset = po;
+        self.stepSize = [aDecoder decodeDoubleForKey: @"ICGStepSize"];
+        NSPoint     p;
+        p.x = [aDecoder decodeDoubleForKey: @"ICGPosX"];
+        p.y = [aDecoder decodeDoubleForKey: @"ICGPosY"];
+        self.pos = p;
+        self.animationFrameIndex = [aDecoder decodeInt64ForKey: @"ICGAnimationFrameIndex"];
+    }
+    
+    return self;
+}
+
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject: self.tools forKey: @"ICGTools"];
+    [aCoder encodeObject: self.tool forKey: @"ICGTool"];
+    [aCoder encodeObject: self.defaultTool forKey: @"ICGDefaultTool"];
+    [aCoder encodeObject: self.talkTool forKey: @"ICGTalkTool"];
+    [aCoder encodeObject: self.balloonText forKey: @"ICGBalloonText"];
+    [aCoder encodeObject: self.animation forKey: @"ICGAnimation"];
+    [aCoder encodeDouble: self.posOffset.width forKey: @"ICGPosOffsetWidth"];
+    [aCoder encodeDouble: self.posOffset.height forKey: @"ICGPosOffsetHeight"];
+    [aCoder encodeDouble: self.stepSize forKey: @"ICGStepSize"];
+    [aCoder encodeDouble: self.pos.x forKey: @"ICGPosX"];
+    [aCoder encodeDouble: self.pos.y forKey: @"ICGPosY"];
+    [aCoder encodeInt64: self.animationFrameIndex forKey: @"ICGAnimationFrameIndex"];
+}
+
+
 -(void) setAnimation:(ICGAnimation *)animation
 {
     _animation = animation;

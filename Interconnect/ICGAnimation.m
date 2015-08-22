@@ -13,19 +13,44 @@
 +(instancetype) animationNamed: (NSString*)inName
 {
     ICGAnimation*           ani = [ICGAnimation new];
+    ani.name = inName;
+    [ani loadFrames];
+    return ani;
+}
+
+
+-(id)   initWithCoder: (NSCoder *)aDecoder
+{
+    self = [super init];
+    if( self )
+    {
+        self.name = [aDecoder decodeObjectForKey: @"ICGName"];
+        [self loadFrames];
+    }
+    
+    return self;
+}
+
+
+-(void) encodeWithCoder: (NSCoder *)aCoder
+{
+    [aCoder encodeObject: self.name forKey: @"ICGName"];
+}
+
+
+-(void) loadFrames
+{
     NSMutableArray*         frames = [NSMutableArray array];
     NSInteger               imgIdx = 0;
-    NSImage*                img = [NSImage imageNamed: inName];
+    NSImage*                img = [NSImage imageNamed: self.name];
     if( !img )
-        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
+        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", self.name, (long)++imgIdx]];
     while( img )
     {
         [frames addObject: img];
-        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
+        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", self.name, (long)++imgIdx]];
     }
-    ani.frames = frames;
-    ani.name = inName;
-    return ani;
+    self.frames = frames;
 }
 
 @end

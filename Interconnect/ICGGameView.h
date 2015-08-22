@@ -53,6 +53,9 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) refreshItemDisplay;
 
+-(BOOL) writeToFile: (NSString*)inFilePath;
+-(BOOL) readFromFile: (NSString*)inFilePath;
+
 @end
 
 

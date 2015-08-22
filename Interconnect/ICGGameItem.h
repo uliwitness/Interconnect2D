@@ -14,7 +14,7 @@
 @class ICGAnimation;
 
 
-@interface ICGGameItem : NSObject
+@interface ICGGameItem : NSObject <NSCoding>
 
 @property (assign,nonatomic) NSPoint                pos;
 @property (assign,nonatomic) NSSize                 posOffset;

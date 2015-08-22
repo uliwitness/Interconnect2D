@@ -12,14 +12,29 @@
 
 @implementation ICGActor
 
--(id)   init
+-(id)   initWithCoder: (NSCoder *)aDecoder
 {
-    self = [super init];
+    self = [super initWithCoder: aDecoder];
     if( self )
     {
-        self.stepSize = 5;
+        self.leftWalkAnimation = [aDecoder decodeObjectForKey: @"ICGLeftWalkAnimation"];
+        self.rightWalkAnimation = [aDecoder decodeObjectForKey: @"ICGRightWalkAnimation"];
+        self.upWalkAnimation = [aDecoder decodeObjectForKey: @"ICGUpWalkAnimation"];
+        self.downWalkAnimation = [aDecoder decodeObjectForKey: @"ICGDownWalkAnimation"];
     }
+    
     return self;
+}
+
+
+-(void) encodeWithCoder: (NSCoder *)aCoder
+{
+    [super encodeWithCoder: aCoder];
+    
+    [aCoder encodeObject: self.leftWalkAnimation forKey: @"ICGLeftWalkAnimation"];
+    [aCoder encodeObject: self.rightWalkAnimation forKey: @"ICGRightWalkAnimation"];
+    [aCoder encodeObject: self.upWalkAnimation forKey: @"ICGUpWalkAnimation"];
+    [aCoder encodeObject: self.downWalkAnimation forKey: @"ICGDownWalkAnimation"];
 }
 
 

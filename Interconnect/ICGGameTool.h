@@ -12,7 +12,7 @@
 @class ICGGameItem;
 
 
-@interface ICGGameTool : NSObject
+@interface ICGGameTool : NSObject <NSCoding>
 
 @property (assign) CGFloat      toolDistanceLimit;
 @property (weak) ICGGameItem*   wielder;

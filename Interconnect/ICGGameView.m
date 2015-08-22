@@ -450,4 +450,30 @@
     [self moveByX: 0 y: -STEP_SIZE];
 }
 
+
+-(BOOL) writeToFile: (NSString*)inFilePath
+{
+    NSData  *   theData = [NSKeyedArchiver archivedDataWithRootObject: @{ @"player": self.player, @"items": self.items }];
+    return [theData writeToFile: inFilePath atomically: YES];
+}
+
+
+-(BOOL) readFromFile: (NSString*)inFilePath
+{
+    NSData*         theData = [NSData dataWithContentsOfFile: inFilePath];
+    if( !theData )
+        return NO;
+    NSDictionary    *   dict = [NSKeyedUnarchiver unarchiveObjectWithData: theData];
+    self.player = dict[@"player"];
+    self.items = [dict[@"items"] mutableCopy];
+    for( ICGGameItem* currItem in self.items )
+    {
+        currItem.owningView = self;
+    }
+    
+    [self refreshItemDisplay];
+    
+    return YES;
+}
+
 @end

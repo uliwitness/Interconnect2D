@@ -8,7 +8,7 @@
 
 #import "ICGGameItem.h"
 
-@interface ICGActor : ICGGameItem
+@interface ICGActor : ICGGameItem <NSCoding>
 
 @property (strong) ICGAnimation  *   leftWalkAnimation;
 @property (strong) ICGAnimation  *   rightWalkAnimation;
