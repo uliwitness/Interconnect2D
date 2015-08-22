@@ -21,6 +21,7 @@
         self.tools = [NSMutableArray new];
         self.image = [NSImage imageNamed: NSImageNameApplicationIcon];
         self.posOffset = NSMakeSize( truncf(self.image.size.width /2), 0 );
+        self.stepSize = 5;
     }
     
     return self;
@@ -35,6 +36,52 @@
 }
 
 
+-(void) advanceAnimation
+{
+    NSInteger   numFrames = self.animation.count;
+    if( self.animation && numFrames > 0 )
+    {
+        _animationFrameIndex++;
+        if( self.animationFrameIndex >= numFrames )
+            self.animationFrameIndex = 0;
+        self.image = self.animation[self.animationFrameIndex];
+    }
+}
+
+
+-(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items
+{    
+    NSPoint pos = self.pos;
+    pos.x += x;
+    pos.y += y;
+    
+    for( ICGGameItem* currItem in items )
+    {
+        if( currItem == self )
+            continue;
+        
+        if( pos.y > (currItem.pos.y -ceilf(self.stepSize /2))
+            && pos.y < (currItem.pos.y +ceilf(self.stepSize /2)) )
+        {
+            CGFloat newMinX = (pos.x -self.posOffset.width),
+                    newMaxX = (pos.x -self.posOffset.width +self.image.size.width),
+                    currItemMinX = (currItem.pos.x -currItem.posOffset.width),
+                    currItemMaxX = (currItem.pos.x -currItem.posOffset.width +currItem.image.size.width);
+            if( (newMinX <= currItemMaxX && newMaxX >= currItemMinX)
+                || (newMaxX >= currItemMinX && newMinX <= currItemMaxX) )
+            {
+                return currItem;
+            }
+        }
+    }
+    
+    self.pos = pos;
+    [self.owningView refreshItemDisplay];
+    
+    return nil;
+}
+
+
 -(void) drawInRect: (NSRect)imgBox
 {
     if( self.isInteractible )
@@ -44,14 +91,6 @@
         shadow.shadowBlurRadius = 8.0;
         shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.2 blue: 0.0 alpha: 1.0];
         [shadow set];
-    }
-    
-    if( self.animation )
-    {
-        _animationFrameIndex++;
-        if( self.animationFrameIndex >= self.animation.count )
-            self.animationFrameIndex = 0;
-        self.image = self.animation[self.animationFrameIndex];
     }
     
     [self.image drawInRect: imgBox];

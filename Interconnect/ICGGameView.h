@@ -11,6 +11,7 @@
 @class ICGGameItem;
 @class ICGGameTool;
 @class ICGGameKeyEvent;
+@class ICGActor;
 
 typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 {
@@ -49,6 +50,8 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 -(void) handleGameKeyDown: (ICGGameKeyEvent*)keyEvt;
 -(void) handleGameKeyUp: (ICGGameKeyEvent*)keyEvt;
+
+-(void) refreshItemDisplay;
 
 @end
 

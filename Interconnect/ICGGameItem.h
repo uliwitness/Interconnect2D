@@ -27,10 +27,14 @@
 @property (weak,nonatomic) ICGGameView*             owningView;
 @property (strong,nonatomic) NSArray*               animation;
 @property (assign,nonatomic) NSInteger              animationFrameIndex;
+@property (assign) CGFloat                          stepSize;
 
 -(void)     drawInRect: (NSRect)imgBox;
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
 -(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;
+-(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items;
+
+-(void)     advanceAnimation;
 
 @end

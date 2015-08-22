@@ -24,6 +24,7 @@
 		554509581B87FE010037DCF5 /* SterntalerWalkAnimation5R.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094E1B87FE010037DCF5 /* SterntalerWalkAnimation5R.png */; };
 		557247241B87D83B00747C6A /* ICGGameTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 557247231B87D83B00747C6A /* ICGGameTool.m */; };
 		557247271B87D8A300747C6A /* ICGGameItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 557247261B87D8A300747C6A /* ICGGameItem.m */; };
+		557DBEE81B88877800470F05 /* ICGActor.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEE71B88877800470F05 /* ICGActor.m */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +63,8 @@
 		557247231B87D83B00747C6A /* ICGGameTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameTool.m; sourceTree = "<group>"; };
 		557247251B87D8A300747C6A /* ICGGameItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameItem.h; sourceTree = "<group>"; };
 		557247261B87D8A300747C6A /* ICGGameItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameItem.m; sourceTree = "<group>"; };
+		557DBEE61B88877800470F05 /* ICGActor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGActor.h; sourceTree = "<group>"; };
+		557DBEE71B88877800470F05 /* ICGActor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGActor.m; sourceTree = "<group>"; };
 		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -270,6 +273,7 @@
 				55069C081B813CBC00CDD0DB /* AppDelegate.m in Sources */,
 				557247271B87D8A300747C6A /* ICGGameItem.m in Sources */,
 				557247241B87D83B00747C6A /* ICGGameTool.m in Sources */,
+				557DBEE81B88877800470F05 /* ICGActor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

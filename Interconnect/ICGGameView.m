@@ -9,6 +9,7 @@
 #import "ICGGameView.h"
 #import "ICGGameTool.h"
 #import "ICGGameItem.h"
+#import "ICGActor.h"
 
 
 // The bigger this number, the more subtle the perspective effect:
@@ -442,34 +443,7 @@
 
 -(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y
 {
-    NSPoint pos = self.player.pos;
-    pos.x += x;
-    pos.y += y;
-
-    for( ICGGameItem* currItem in self.items )
-    {
-        if( currItem == self.player )
-            continue;
-        
-        if( pos.y > (currItem.pos.y -ceilf(STEP_SIZE /2))
-            && pos.y < (currItem.pos.y +ceilf(STEP_SIZE /2)) )
-        {
-            CGFloat newMinX = (pos.x -self.player.posOffset.width),
-                    newMaxX = (pos.x -self.player.posOffset.width +self.player.image.size.width),
-                    currItemMinX = (currItem.pos.x -currItem.posOffset.width),
-                    currItemMaxX = (currItem.pos.x -currItem.posOffset.width +currItem.image.size.width);
-            if( (newMinX <= currItemMaxX && newMaxX >= currItemMinX)
-                || (newMaxX >= currItemMinX && newMinX <= currItemMaxX) )
-            {
-                return currItem;
-            }
-        }
-    }
-    
-    self.player.pos = pos;
-    [self refreshItemDisplay];
-    
-    return nil;
+    return [self.player moveByX: x y: y collidingWithItems: self.items];
 }
 
 
