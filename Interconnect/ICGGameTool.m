@@ -27,6 +27,10 @@
 -(BOOL) interactWithItem: (ICGGameItem*)otherItem
 {
     NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
+    
+    otherItem.balloonText = @"I feel very interacted!";
+    [otherItem performSelector: @selector(setBalloonText:) withObject: nil afterDelay: 2.0];
+    
     return YES;
 }
 

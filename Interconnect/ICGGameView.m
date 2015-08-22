@@ -12,7 +12,7 @@
 
 
 // The bigger this number, the more subtle the perspective effect:
-#define PERSPECTIVE_SCALE_MULTIPLIER        200
+#define PERSPECTIVE_SCALE_MULTIPLIER        500
 
 #define STEP_SIZE                           5
 #define KEY_REPEAT_THRESHOLD                0.15     // seconds to wait before sending first key repeat.
@@ -64,7 +64,8 @@
         self.pressedKeys = [NSMutableArray new];
         self.items = [NSMutableArray new];
         self.player = [ICGGameItem new];
-        self.player.pos = NSMakePoint( 200, 200 );
+        self.player.owningView = self;
+        self.player.pos = NSMakePoint( 600, 200 );
         self.player.image = [NSImage imageNamed: NSImageNameUser];
         NSSize      imgSize = self.player.image.size;
         self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
@@ -74,9 +75,11 @@
         [self.items addObject: self.player];
         
         ICGGameItem*    obstacle = [ICGGameItem new];
-        obstacle.pos = NSMakePoint( 250, 120 );
+        obstacle.owningView = self;
+        obstacle.pos = NSMakePoint( 650, 190 );
         obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
         imgSize = obstacle.image.size;
+        obstacle.defaultTool = self.player.talkTool;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         [self.items addObject: obstacle];
         
@@ -94,18 +97,9 @@
     id      list = backwards ? self.items.reverseObjectEnumerator : self.items;
     for( ICGGameItem* currItem in list )
     {
-        NSRect      imgBox = { currItem.pos, NSZeroSize };
-        imgBox.size = currItem.image.size;
-        CGFloat     perspectiveScaleFactor = 1 / (imgBox.origin.y / PERSPECTIVE_SCALE_MULTIPLIER);
+        NSRect      imgBox = { currItem.pos, currItem.image.size };
         
-        imgBox.origin.x = ((imgBox.origin.x -(self.bounds.size.width /2)) * perspectiveScaleFactor) +(self.bounds.size.width /2);
-        imgBox.origin.y = ((imgBox.origin.y -(self.bounds.size.height /2)) * perspectiveScaleFactor) +(self.bounds.size.height /2);
-        
-        imgBox.size.width *= perspectiveScaleFactor;
-        imgBox.size.height *= perspectiveScaleFactor;
-
-        imgBox.origin.x -= currItem.posOffset.width * perspectiveScaleFactor;
-        imgBox.origin.y += currItem.posOffset.height * perspectiveScaleFactor;
+        imgBox = [self screenRectFromWorldRect: imgBox withRectOriginOffset: currItem.posOffset];
         
         if( !handler( currItem, imgBox ) )
             break;
@@ -113,26 +107,55 @@
 }
 
 
+-(NSPoint)  screenPointFromWorldPoint:(NSPoint)aPoint
+{
+    CGFloat     perspectiveScaleFactor = 1 / (aPoint.y / PERSPECTIVE_SCALE_MULTIPLIER);
+    
+    aPoint.x = ((aPoint.x -(self.bounds.size.width /2)) * perspectiveScaleFactor) +(self.bounds.size.width /2);
+    aPoint.y = ((aPoint.y -(self.bounds.size.height /4)) * perspectiveScaleFactor) +(self.bounds.size.height /4);
+    return aPoint;
+}
+
+
+-(NSRect)  screenRectFromWorldRect:(NSRect)aBox withRectOriginOffset: (NSSize)posOffset
+{
+    CGFloat     perspectiveScaleFactor = 1 / (aBox.origin.y / PERSPECTIVE_SCALE_MULTIPLIER);
+    
+    aBox.origin.x = ((aBox.origin.x -(self.bounds.size.width /2)) * perspectiveScaleFactor) +(self.bounds.size.width /2);
+    aBox.origin.y = ((aBox.origin.y -(self.bounds.size.height /4)) * perspectiveScaleFactor) +(self.bounds.size.height /4);
+    
+    aBox.size.width *= perspectiveScaleFactor;
+    aBox.size.height *= perspectiveScaleFactor;
+
+    aBox.origin.x -= posOffset.width * perspectiveScaleFactor;
+    aBox.origin.y += posOffset.height * perspectiveScaleFactor;
+    
+    return aBox;
+}
+
+
 - (void)drawRect: (NSRect)dirtyRect
 {
+    NSPoint         floor[4] = { { 1, 1 }, { 1, 300 }, { 1200, 300 }, { 1200, 1 } };
+    
+    [[NSColor colorWithCalibratedRed:0.341 green:0.753 blue:0.999 alpha:1.000] set];
+    NSRect  skyRect = self.bounds;
+    skyRect.origin.y = [self screenPointFromWorldPoint: floor[1]].y;
+    skyRect.size.height = self.bounds.size.height - skyRect.origin.y;
+    [NSBezierPath fillRect: skyRect];
+    
+    NSBezierPath*   floorPath = [NSBezierPath bezierPath];
+    [floorPath moveToPoint: [self screenPointFromWorldPoint: floor[3]]];
+    [floorPath lineToPoint: [self screenPointFromWorldPoint: floor[0]]];
+    [floorPath lineToPoint: [self screenPointFromWorldPoint: floor[1]]];
+    [floorPath lineToPoint: [self screenPointFromWorldPoint: floor[2]]];
+    [floorPath lineToPoint: [self screenPointFromWorldPoint: floor[3]]];
+    [[NSColor colorWithCalibratedRed:0.058 green:0.439 blue:0.005 alpha:1.000] set];
+    [floorPath fill];
+    
     [self doBackwards: YES forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
     {
-        if( currItem.isInteractible )
-        {
-            [NSGraphicsContext saveGraphicsState];
-            NSShadow*   shadow = [NSShadow new];
-            shadow.shadowBlurRadius = 8.0;
-            shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.4 blue: 0.4 alpha: 0.9];
-            [shadow set];
-        }
-        
-        [currItem.image drawInRect: imgBox];
-        //NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
-
-        if( currItem.isInteractible )
-        {
-            [NSGraphicsContext restoreGraphicsState];
-        }
+        [currItem drawInRect: imgBox];
         
         return YES;
     }];

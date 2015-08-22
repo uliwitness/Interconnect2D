@@ -10,6 +10,7 @@
 
 
 @class ICGGameTool;
+@class ICGGameView;
 
 
 @interface ICGGameItem : NSObject
@@ -18,10 +19,14 @@
 @property (assign,nonatomic) NSSize             posOffset;
 @property (strong,nonatomic) NSImage*           image;
 @property (strong,nonatomic) ICGGameTool*       tool;
+@property (strong,nonatomic) ICGGameTool*       defaultTool;
 @property (strong,nonatomic) NSMutableArray*    tools;
 @property (strong,nonatomic) ICGGameTool*       talkTool;
 @property (assign,nonatomic) BOOL               isInteractible;
+@property (strong,nonatomic) NSString*          balloonText;
+@property (weak,nonatomic) ICGGameView*         owningView;
 
+-(void)     drawInRect: (NSRect)imgBox;
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
 -(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;

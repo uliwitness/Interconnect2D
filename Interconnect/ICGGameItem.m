@@ -8,6 +8,7 @@
 
 #import "ICGGameItem.h"
 #import "ICGGameTool.h"
+#import "ICGGameView.h"
 
 
 @implementation ICGGameItem
@@ -26,8 +27,55 @@
 }
 
 
+-(void) drawInRect: (NSRect)imgBox
+{
+    if( self.isInteractible )
+    {
+        [NSGraphicsContext saveGraphicsState];
+        NSShadow*   shadow = [NSShadow new];
+        shadow.shadowBlurRadius = 8.0;
+        shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.2 blue: 0.0 alpha: 1.0];
+        [shadow set];
+    }
+    
+    [self.image drawInRect: imgBox];
+    //NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
+
+    if( self.isInteractible )
+    {
+        [NSGraphicsContext restoreGraphicsState];
+    }
+    
+    if( self.balloonText )
+    {
+        NSDictionary*   balloonAttrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont smallSystemFontSize]], NSForegroundColorAttributeName: NSColor.lightGrayColor };
+        
+        NSRect  balloonRect = { NSZeroPoint, [self.balloonText sizeWithAttributes: balloonAttrs] };
+        balloonRect.origin.x = NSMidX(imgBox) -truncf(balloonRect.size.width /2);
+        balloonRect.origin.y = NSMaxY(imgBox) + 8;
+        
+        NSBezierPath*   balloonPath = [NSBezierPath bezierPathWithRoundedRect: NSInsetRect( balloonRect, -8, -8 ) xRadius: 8 yRadius:8];
+        [[NSColor colorWithCalibratedWhite: 0.0 alpha: 0.6] set];
+        [balloonPath fill];
+        [self.balloonText drawAtPoint: balloonRect.origin withAttributes: balloonAttrs];
+    }
+}
+
+
+-(void) setBalloonText:(NSString *)balloonText
+{
+    _balloonText = balloonText;
+    [self.owningView setNeedsDisplay: YES];
+}
+
+
 -(BOOL) mouseDownAtPoint: (NSPoint)pos
 {
+    if( self.isInteractible )
+    {
+        [self.owningView.player interactWithNearbyItems: @[ self ] tool: self.defaultTool ? self.defaultTool : nil];
+        return YES;
+    }
     return NO;
 }
 
