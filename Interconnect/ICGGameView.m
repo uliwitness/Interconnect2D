@@ -12,7 +12,7 @@
 
 
 // The bigger this number, the more subtle the perspective effect:
-#define PERSPECTIVE_SCALE_MULTIPLIER        500
+#define PERSPECTIVE_SCALE_MULTIPLIER        700
 
 #define STEP_SIZE                           5
 #define KEY_REPEAT_THRESHOLD                0.15     // seconds to wait before sending first key repeat.
@@ -109,7 +109,7 @@
 
 -(NSPoint)  screenPointFromWorldPoint:(NSPoint)aPoint
 {
-    CGFloat     perspectiveScaleFactor = 1 / (aPoint.y / PERSPECTIVE_SCALE_MULTIPLIER);
+    CGFloat     perspectiveScaleFactor = (self.bounds.size.height -aPoint.y) / PERSPECTIVE_SCALE_MULTIPLIER;
     
     aPoint.x = ((aPoint.x -(self.bounds.size.width /2)) * perspectiveScaleFactor) +(self.bounds.size.width /2);
     aPoint.y = ((aPoint.y -(self.bounds.size.height /4)) * perspectiveScaleFactor) +(self.bounds.size.height /4);
@@ -119,7 +119,7 @@
 
 -(NSRect)  screenRectFromWorldRect:(NSRect)aBox withRectOriginOffset: (NSSize)posOffset
 {
-    CGFloat     perspectiveScaleFactor = 1 / (aBox.origin.y / PERSPECTIVE_SCALE_MULTIPLIER);
+    CGFloat     perspectiveScaleFactor = (self.bounds.size.height -aBox.origin.y) / PERSPECTIVE_SCALE_MULTIPLIER;
     
     aBox.origin.x = ((aBox.origin.x -(self.bounds.size.width /2)) * perspectiveScaleFactor) +(self.bounds.size.width /2);
     aBox.origin.y = ((aBox.origin.y -(self.bounds.size.height /4)) * perspectiveScaleFactor) +(self.bounds.size.height /4);
