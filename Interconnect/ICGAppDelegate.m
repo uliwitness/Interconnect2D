@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Uli Kusterer. All rights reserved.
 //
 
-#import "AppDelegate.h"
+#import "ICGAppDelegate.h"
 #import "ICGGameView.h"
 #import "ICGGameItem.h"
 #import "ICGActor.h"
@@ -14,18 +14,38 @@
 #import "ICGAnimation.h"
 
 
-@interface AppDelegate ()
+@interface ICGAppDelegate ()
 
 @property (weak) IBOutlet NSWindow          *window;
 @property (weak) IBOutlet ICGGameView       *gameView;
+@property (copy) NSString                   *filePath;
 
 @end
 
-@implementation AppDelegate
+@implementation ICGAppDelegate
+
+-(BOOL) application:(NSApplication *)sender openFile:(NSString *)filename
+{
+    if( self.filePath && ![self.gameView writeToFile: self.filePath] )
+    {
+        NSRunAlertPanel( @"Failed to save", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
+        return NO;
+    }
+    else
+    {
+        self.filePath = filename;
+        return [self.gameView readFromFile: self.filePath];
+    }
+    
+    return YES;
+}
+
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    if( ![self.gameView readFromFile: @"GameDump.data"] )
+    if( !self.filePath )
+        self.filePath = @"GameDump.data";
+    if( ![self.gameView readFromFile: self.filePath] )
     {
         NSLog(@"Generating sample file.");
         
@@ -53,14 +73,19 @@
         [self.gameView.items addObject: obstacle];
         
         [self.gameView refreshItemDisplay];
-        
-        [self.gameView writeToFile: @"GameDump.data"];
     }
-
 }
 
-- (void)applicationWillTerminate:(NSNotification *)aNotification {
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
     // Insert code here to tear down your application
+}
+
+
+-(void) saveDocument: (id)sender
+{
+    if( ![self.gameView writeToFile: self.filePath] )
+        NSRunAlertPanel( @"Failed to save", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
 }
 
 @end

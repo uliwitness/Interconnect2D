@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		55069C081B813CBC00CDD0DB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C071B813CBC00CDD0DB /* AppDelegate.m */; };
+		55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C071B813CBC00CDD0DB /* ICGAppDelegate.m */; };
 		55069C0A1B813CBC00CDD0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C091B813CBC00CDD0DB /* main.m */; };
 		55069C0C1B813CBC00CDD0DB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55069C0B1B813CBC00CDD0DB /* Images.xcassets */; };
 		55069C0F1B813CBC00CDD0DB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55069C0D1B813CBC00CDD0DB /* MainMenu.xib */; };
@@ -42,8 +42,8 @@
 /* Begin PBXFileReference section */
 		55069C011B813CBC00CDD0DB /* Interconnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Interconnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55069C051B813CBC00CDD0DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		55069C061B813CBC00CDD0DB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		55069C071B813CBC00CDD0DB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		55069C061B813CBC00CDD0DB /* ICGAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICGAppDelegate.h; sourceTree = "<group>"; };
+		55069C071B813CBC00CDD0DB /* ICGAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICGAppDelegate.m; sourceTree = "<group>"; };
 		55069C091B813CBC00CDD0DB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		55069C0B1B813CBC00CDD0DB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		55069C0E1B813CBC00CDD0DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -111,8 +111,8 @@
 		55069C031B813CBC00CDD0DB /* Interconnect */ = {
 			isa = PBXGroup;
 			children = (
-				55069C061B813CBC00CDD0DB /* AppDelegate.h */,
-				55069C071B813CBC00CDD0DB /* AppDelegate.m */,
+				55069C061B813CBC00CDD0DB /* ICGAppDelegate.h */,
+				55069C071B813CBC00CDD0DB /* ICGAppDelegate.m */,
 				557DBEE91B888BB100470F05 /* Engine */,
 				55069C0B1B813CBC00CDD0DB /* Images.xcassets */,
 				554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */,
@@ -285,7 +285,7 @@
 			files = (
 				55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */,
 				55069C0A1B813CBC00CDD0DB /* main.m in Sources */,
-				55069C081B813CBC00CDD0DB /* AppDelegate.m in Sources */,
+				55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */,
 				557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */,
 				557247271B87D8A300747C6A /* ICGGameItem.m in Sources */,
 				557247241B87D83B00747C6A /* ICGGameTool.m in Sources */,
