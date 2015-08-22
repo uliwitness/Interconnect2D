@@ -110,12 +110,7 @@
 			children = (
 				55069C061B813CBC00CDD0DB /* AppDelegate.h */,
 				55069C071B813CBC00CDD0DB /* AppDelegate.m */,
-				55A82B451B86A9FE00E21718 /* ICGGameView.h */,
-				55A82B461B86A9FE00E21718 /* ICGGameView.m */,
-				557247221B87D83B00747C6A /* ICGGameTool.h */,
-				557247231B87D83B00747C6A /* ICGGameTool.m */,
-				557247251B87D8A300747C6A /* ICGGameItem.h */,
-				557247261B87D8A300747C6A /* ICGGameItem.m */,
+				557DBEE91B888BB100470F05 /* Engine */,
 				55069C0B1B813CBC00CDD0DB /* Images.xcassets */,
 				554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */,
 				554509461B87FE010037DCF5 /* SterntalerWalkAnimation1R.png */,
@@ -157,6 +152,21 @@
 				55069C191B813CBC00CDD0DB /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		557DBEE91B888BB100470F05 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				55A82B451B86A9FE00E21718 /* ICGGameView.h */,
+				55A82B461B86A9FE00E21718 /* ICGGameView.m */,
+				557247221B87D83B00747C6A /* ICGGameTool.h */,
+				557247231B87D83B00747C6A /* ICGGameTool.m */,
+				557247251B87D8A300747C6A /* ICGGameItem.h */,
+				557247261B87D8A300747C6A /* ICGGameItem.m */,
+				557DBEE61B88877800470F05 /* ICGActor.h */,
+				557DBEE71B88877800470F05 /* ICGActor.m */,
+			);
+			name = Engine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

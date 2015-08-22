@@ -64,27 +64,7 @@
     {
         self.pressedKeys = [NSMutableArray new];
         self.items = [NSMutableArray new];
-        self.player = [ICGGameItem new];
-        self.player.owningView = self;
-        self.player.pos = NSMakePoint( 600, 200 );
-        self.player.animation = @[ [NSImage imageNamed: @"SterntalerWalkAnimation1"], [NSImage imageNamed: @"SterntalerWalkAnimation2"], [NSImage imageNamed: @"SterntalerWalkAnimation3"], [NSImage imageNamed: @"SterntalerWalkAnimation4"], [NSImage imageNamed: @"SterntalerWalkAnimation5"] ];
-        NSSize      imgSize = self.player.image.size;
-        self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
-        ICGGameTool*    tool = [ICGGameTool new];
-        tool.wielder = self.player;
-        self.player.talkTool = tool;
-        [self.items addObject: self.player];
-        
-        ICGGameItem*    obstacle = [ICGGameItem new];
-        obstacle.owningView = self;
-        obstacle.pos = NSMakePoint( 650, 190 );
-        obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
-        imgSize = obstacle.image.size;
-        obstacle.defaultTool = self.player.talkTool;
-        obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
-        [self.items addObject: obstacle];
-        
-        [self refreshItemDisplay];
+
         self.keyRepeatTimer = [NSTimer scheduledTimerWithTimeInterval: 0.01 target: self selector: @selector(checkForKeyRepeats:) userInfo: nil repeats: YES];
         [self.keyRepeatTimer setFireDate: [NSDate distantFuture]];
     }

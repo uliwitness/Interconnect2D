@@ -7,11 +7,16 @@
 //
 
 #import "AppDelegate.h"
+#import "ICGGameView.h"
+#import "ICGGameItem.h"
+#import "ICGActor.h"
+#import "ICGGameTool.h"
+
 
 @interface AppDelegate ()
 
-@property (weak) IBOutlet NSWindow  *window;
-@property (strong) NSMutableArray   *tiles;
+@property (weak) IBOutlet NSWindow          *window;
+@property (weak) IBOutlet ICGGameView       *gameView;
 
 @end
 
@@ -19,6 +24,30 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+        ICGActor    *   thePlayer = [ICGActor new];
+        thePlayer.owningView = self.gameView;
+        thePlayer.pos = NSMakePoint( 600, 200 );
+        thePlayer.leftWalkAnimation = @[ [NSImage imageNamed: @"SterntalerWalkAnimation1"], [NSImage imageNamed: @"SterntalerWalkAnimation2"], [NSImage imageNamed: @"SterntalerWalkAnimation3"], [NSImage imageNamed: @"SterntalerWalkAnimation4"], [NSImage imageNamed: @"SterntalerWalkAnimation5"] ];
+        thePlayer.animation = thePlayer.leftWalkAnimation;
+        NSSize      imgSize = thePlayer.image.size;
+        thePlayer.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        ICGGameTool*    tool = [ICGGameTool new];
+        tool.wielder = thePlayer;
+        thePlayer.talkTool = tool;
+        self.gameView.player = thePlayer;
+        [self.gameView.items addObject: thePlayer];
+        
+        ICGGameItem*    obstacle = [ICGGameItem new];
+        obstacle.owningView = self.gameView;
+        obstacle.pos = NSMakePoint( 650, 190 );
+        obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
+        imgSize = obstacle.image.size;
+        obstacle.defaultTool = self.gameView.player.talkTool;
+        obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        [self.gameView.items addObject: obstacle];
+        
+        [self.gameView refreshItemDisplay];
+
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
