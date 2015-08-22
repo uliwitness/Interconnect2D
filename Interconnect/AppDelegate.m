@@ -11,6 +11,7 @@
 #import "ICGGameItem.h"
 #import "ICGActor.h"
 #import "ICGGameTool.h"
+#import "ICGAnimation.h"
 
 
 @interface AppDelegate ()
@@ -27,8 +28,8 @@
         ICGActor    *   thePlayer = [ICGActor new];
         thePlayer.owningView = self.gameView;
         thePlayer.pos = NSMakePoint( 600, 200 );
-        thePlayer.leftWalkAnimation = [ICGActor animationNamed: @"SterntalerWalkAnimation"];
-        thePlayer.rightWalkAnimation = [ICGActor animationNamed: @"SterntalerWalkAnimationR"];
+        thePlayer.leftWalkAnimation = [ICGAnimation animationNamed: @"SterntalerWalkAnimation"];
+        thePlayer.rightWalkAnimation = [ICGAnimation animationNamed: @"SterntalerWalkAnimationR"];
         thePlayer.animation = thePlayer.leftWalkAnimation;
         NSSize      imgSize = thePlayer.image.size;
         thePlayer.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
@@ -41,7 +42,7 @@
         ICGGameItem*    obstacle = [ICGGameItem new];
         obstacle.owningView = self.gameView;
         obstacle.pos = NSMakePoint( 650, 190 );
-        obstacle.image = [NSImage imageNamed: NSImageNameColorPanel];
+        obstacle.animation = [ICGAnimation animationNamed: NSImageNameColorPanel];
         imgSize = obstacle.image.size;
         obstacle.defaultTool = self.gameView.player.talkTool;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );

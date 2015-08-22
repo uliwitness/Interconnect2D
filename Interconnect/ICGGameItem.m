@@ -9,6 +9,7 @@
 #import "ICGGameItem.h"
 #import "ICGGameTool.h"
 #import "ICGGameView.h"
+#import "ICGAnimation.h"
 
 
 @implementation ICGGameItem
@@ -28,23 +29,23 @@
 }
 
 
--(void) setAnimation:(NSArray *)animation
+-(void) setAnimation:(ICGAnimation *)animation
 {
     _animation = animation;
-    self.image = animation[0];
+    self.image = animation.frames[0];
     self.animationFrameIndex = 0;
 }
 
 
 -(void) advanceAnimation
 {
-    NSInteger   numFrames = self.animation.count;
+    NSInteger   numFrames = self.animation.frames.count;
     if( self.animation && numFrames > 0 )
     {
         _animationFrameIndex++;
         if( self.animationFrameIndex >= numFrames )
             self.animationFrameIndex = 0;
-        self.image = self.animation[self.animationFrameIndex];
+        self.image = self.animation.frames[self.animationFrameIndex];
     }
 }
 
@@ -165,22 +166,6 @@
         ;//NSLog( @"Nothing near enough to %@ to interact with.", self.image.name );
     
     return interacted;
-}
-
-
-+(NSMutableArray*)    animationNamed: (NSString*)inName
-{
-    NSMutableArray*         ani = [NSMutableArray array];
-    NSInteger               imgIdx = 0;
-    NSImage*                img = [NSImage imageNamed: inName];
-    if( !img )
-        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
-    while( img )
-    {
-        [ani addObject: img];
-        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
-    }
-    return ani;
 }
 
 @end

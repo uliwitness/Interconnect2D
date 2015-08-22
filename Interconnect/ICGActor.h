@@ -10,9 +10,9 @@
 
 @interface ICGActor : ICGGameItem
 
-@property (strong) NSArray  *   leftWalkAnimation;
-@property (strong) NSArray  *   rightWalkAnimation;
-@property (strong) NSArray  *   upWalkAnimation;
-@property (strong) NSArray  *   downWalkAnimation;
+@property (strong) ICGAnimation  *   leftWalkAnimation;
+@property (strong) ICGAnimation  *   rightWalkAnimation;
+@property (strong) ICGAnimation  *   upWalkAnimation;
+@property (strong) ICGAnimation  *   downWalkAnimation;
 
 @end

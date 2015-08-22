@@ -11,23 +11,24 @@
 
 @class ICGGameTool;
 @class ICGGameView;
+@class ICGAnimation;
 
 
 @interface ICGGameItem : NSObject
 
 @property (assign,nonatomic) NSPoint                pos;
 @property (assign,nonatomic) NSSize                 posOffset;
-@property (strong,nonatomic) NSImage*               image;
+@property (strong,nonatomic) ICGAnimation*          animation;
 @property (strong,nonatomic) ICGGameTool*           tool;
 @property (strong,nonatomic) ICGGameTool*           defaultTool;
 @property (strong,nonatomic) NSMutableArray*        tools;
 @property (strong,nonatomic) ICGGameTool*           talkTool;
-@property (assign,nonatomic) BOOL                   isInteractible;
 @property (strong,nonatomic) NSString*              balloonText;
-@property (weak,nonatomic) ICGGameView*             owningView;
-@property (strong,nonatomic) NSArray*               animation;
-@property (assign,nonatomic) NSInteger              animationFrameIndex;
 @property (assign) CGFloat                          stepSize;
+@property (strong,nonatomic) NSImage*               image;
+@property (assign,nonatomic) BOOL                   isInteractible;
+@property (weak,nonatomic) ICGGameView*             owningView;
+@property (assign,nonatomic) NSInteger              animationFrameIndex;
 
 -(void)     drawInRect: (NSRect)imgBox;
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
@@ -36,7 +37,5 @@
 -(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items;
 
 -(void)     advanceAnimation;
-
-+(NSArray*) animationNamed: (NSString*)inName;
 
 @end
