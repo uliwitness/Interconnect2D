@@ -454,8 +454,12 @@
         if( pos.y > (currItem.pos.y -ceilf(STEP_SIZE /2))
             && pos.y < (currItem.pos.y +ceilf(STEP_SIZE /2)) )
         {
-            if( pos.x >= (currItem.pos.x -currItem.posOffset.width)
-                && pos.x <= (currItem.pos.x -currItem.posOffset.width +currItem.image.size.width) )
+            CGFloat newMinX = (pos.x -self.player.posOffset.width),
+                    newMaxX = (pos.x -self.player.posOffset.width +self.player.image.size.width),
+                    currItemMinX = (currItem.pos.x -currItem.posOffset.width),
+                    currItemMaxX = (currItem.pos.x -currItem.posOffset.width +currItem.image.size.width);
+            if( (newMinX <= currItemMaxX && newMaxX >= currItemMinX)
+                || (newMaxX >= currItemMinX && newMinX <= currItemMaxX) )
             {
                 return currItem;
             }

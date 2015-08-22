@@ -27,6 +27,14 @@
 }
 
 
+-(void) setAnimation:(NSArray *)animation
+{
+    _animation = animation;
+    self.image = animation[0];
+    self.animationFrameIndex = 0;
+}
+
+
 -(void) drawInRect: (NSRect)imgBox
 {
     if( self.isInteractible )
@@ -40,10 +48,10 @@
     
     if( self.animation )
     {
-        self.image = self.animation[self.animationFrameIndex];
         _animationFrameIndex++;
         if( self.animationFrameIndex >= self.animation.count )
             self.animationFrameIndex = 0;
+        self.image = self.animation[self.animationFrameIndex];
     }
     
     [self.image drawInRect: imgBox];
