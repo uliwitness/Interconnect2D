@@ -38,6 +38,14 @@
         [shadow set];
     }
     
+    if( self.animation )
+    {
+        self.image = self.animation[self.animationFrameIndex];
+        _animationFrameIndex++;
+        if( self.animationFrameIndex >= self.animation.count )
+            self.animationFrameIndex = 0;
+    }
+    
     [self.image drawInRect: imgBox];
     //NSLog(@"%f,%f",imgBox.size.width,imgBox.size.height);
 

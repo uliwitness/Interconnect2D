@@ -66,7 +66,7 @@
         self.player = [ICGGameItem new];
         self.player.owningView = self;
         self.player.pos = NSMakePoint( 600, 200 );
-        self.player.image = [NSImage imageNamed: NSImageNameUser];
+        self.player.animation = @[ [NSImage imageNamed: @"SterntalerWalkAnimation1"], [NSImage imageNamed: @"SterntalerWalkAnimation2"], [NSImage imageNamed: @"SterntalerWalkAnimation3"], [NSImage imageNamed: @"SterntalerWalkAnimation4"], [NSImage imageNamed: @"SterntalerWalkAnimation5"] ];
         NSSize      imgSize = self.player.image.size;
         self.player.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         ICGGameTool*    tool = [ICGGameTool new];
