@@ -37,4 +37,6 @@
 
 -(void)     advanceAnimation;
 
++(NSArray*) animationNamed: (NSString*)inName;
+
 @end

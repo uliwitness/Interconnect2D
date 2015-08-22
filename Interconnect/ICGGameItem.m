@@ -167,4 +167,20 @@
     return interacted;
 }
 
+
++(NSMutableArray*)    animationNamed: (NSString*)inName
+{
+    NSMutableArray*         ani = [NSMutableArray array];
+    NSInteger               imgIdx = 0;
+    NSImage*                img = [NSImage imageNamed: inName];
+    if( !img )
+        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
+    while( img )
+    {
+        [ani addObject: img];
+        img = [NSImage imageNamed: [NSString stringWithFormat: @"%@%ld", inName, (long)++imgIdx]];
+    }
+    return ani;
+}
+
 @end

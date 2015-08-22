@@ -13,15 +13,15 @@
 		55069C0F1B813CBC00CDD0DB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55069C0D1B813CBC00CDD0DB /* MainMenu.xib */; };
 		55069C1B1B813CBC00CDD0DB /* InterconnectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C1A1B813CBC00CDD0DB /* InterconnectTests.m */; };
 		5545094F1B87FE010037DCF5 /* SterntalerWalkAnimation1.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */; };
-		554509501B87FE010037DCF5 /* SterntalerWalkAnimation1R.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509461B87FE010037DCF5 /* SterntalerWalkAnimation1R.png */; };
+		554509501B87FE010037DCF5 /* SterntalerWalkAnimationR1.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509461B87FE010037DCF5 /* SterntalerWalkAnimationR1.png */; };
 		554509511B87FE010037DCF5 /* SterntalerWalkAnimation2.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509471B87FE010037DCF5 /* SterntalerWalkAnimation2.png */; };
-		554509521B87FE010037DCF5 /* SterntalerWalkAnimation2R.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509481B87FE010037DCF5 /* SterntalerWalkAnimation2R.png */; };
+		554509521B87FE010037DCF5 /* SterntalerWalkAnimationR2.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509481B87FE010037DCF5 /* SterntalerWalkAnimationR2.png */; };
 		554509531B87FE010037DCF5 /* SterntalerWalkAnimation3.png in Resources */ = {isa = PBXBuildFile; fileRef = 554509491B87FE010037DCF5 /* SterntalerWalkAnimation3.png */; };
-		554509541B87FE010037DCF5 /* SterntalerWalkAnimation3R.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094A1B87FE010037DCF5 /* SterntalerWalkAnimation3R.png */; };
+		554509541B87FE010037DCF5 /* SterntalerWalkAnimationR3.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094A1B87FE010037DCF5 /* SterntalerWalkAnimationR3.png */; };
 		554509551B87FE010037DCF5 /* SterntalerWalkAnimation4.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094B1B87FE010037DCF5 /* SterntalerWalkAnimation4.png */; };
-		554509561B87FE010037DCF5 /* SterntalerWalkAnimation4R.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094C1B87FE010037DCF5 /* SterntalerWalkAnimation4R.png */; };
+		554509561B87FE010037DCF5 /* SterntalerWalkAnimationR4.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094C1B87FE010037DCF5 /* SterntalerWalkAnimationR4.png */; };
 		554509571B87FE010037DCF5 /* SterntalerWalkAnimation5.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094D1B87FE010037DCF5 /* SterntalerWalkAnimation5.png */; };
-		554509581B87FE010037DCF5 /* SterntalerWalkAnimation5R.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094E1B87FE010037DCF5 /* SterntalerWalkAnimation5R.png */; };
+		554509581B87FE010037DCF5 /* SterntalerWalkAnimationR5.png in Resources */ = {isa = PBXBuildFile; fileRef = 5545094E1B87FE010037DCF5 /* SterntalerWalkAnimationR5.png */; };
 		557247241B87D83B00747C6A /* ICGGameTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 557247231B87D83B00747C6A /* ICGGameTool.m */; };
 		557247271B87D8A300747C6A /* ICGGameItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 557247261B87D8A300747C6A /* ICGGameItem.m */; };
 		557DBEE81B88877800470F05 /* ICGActor.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEE71B88877800470F05 /* ICGActor.m */; };
@@ -50,15 +50,15 @@
 		55069C191B813CBC00CDD0DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55069C1A1B813CBC00CDD0DB /* InterconnectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InterconnectTests.m; sourceTree = "<group>"; };
 		554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation1.png; sourceTree = SOURCE_ROOT; };
-		554509461B87FE010037DCF5 /* SterntalerWalkAnimation1R.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation1R.png; sourceTree = SOURCE_ROOT; };
+		554509461B87FE010037DCF5 /* SterntalerWalkAnimationR1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR1.png; sourceTree = SOURCE_ROOT; };
 		554509471B87FE010037DCF5 /* SterntalerWalkAnimation2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation2.png; sourceTree = SOURCE_ROOT; };
-		554509481B87FE010037DCF5 /* SterntalerWalkAnimation2R.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation2R.png; sourceTree = SOURCE_ROOT; };
+		554509481B87FE010037DCF5 /* SterntalerWalkAnimationR2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR2.png; sourceTree = SOURCE_ROOT; };
 		554509491B87FE010037DCF5 /* SterntalerWalkAnimation3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation3.png; sourceTree = SOURCE_ROOT; };
-		5545094A1B87FE010037DCF5 /* SterntalerWalkAnimation3R.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation3R.png; sourceTree = SOURCE_ROOT; };
+		5545094A1B87FE010037DCF5 /* SterntalerWalkAnimationR3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR3.png; sourceTree = SOURCE_ROOT; };
 		5545094B1B87FE010037DCF5 /* SterntalerWalkAnimation4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation4.png; sourceTree = SOURCE_ROOT; };
-		5545094C1B87FE010037DCF5 /* SterntalerWalkAnimation4R.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation4R.png; sourceTree = SOURCE_ROOT; };
+		5545094C1B87FE010037DCF5 /* SterntalerWalkAnimationR4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR4.png; sourceTree = SOURCE_ROOT; };
 		5545094D1B87FE010037DCF5 /* SterntalerWalkAnimation5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation5.png; sourceTree = SOURCE_ROOT; };
-		5545094E1B87FE010037DCF5 /* SterntalerWalkAnimation5R.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation5R.png; sourceTree = SOURCE_ROOT; };
+		5545094E1B87FE010037DCF5 /* SterntalerWalkAnimationR5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR5.png; sourceTree = SOURCE_ROOT; };
 		557247221B87D83B00747C6A /* ICGGameTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameTool.h; sourceTree = "<group>"; };
 		557247231B87D83B00747C6A /* ICGGameTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameTool.m; sourceTree = "<group>"; };
 		557247251B87D8A300747C6A /* ICGGameItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameItem.h; sourceTree = "<group>"; };
@@ -113,15 +113,15 @@
 				557DBEE91B888BB100470F05 /* Engine */,
 				55069C0B1B813CBC00CDD0DB /* Images.xcassets */,
 				554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */,
-				554509461B87FE010037DCF5 /* SterntalerWalkAnimation1R.png */,
+				554509461B87FE010037DCF5 /* SterntalerWalkAnimationR1.png */,
 				554509471B87FE010037DCF5 /* SterntalerWalkAnimation2.png */,
-				554509481B87FE010037DCF5 /* SterntalerWalkAnimation2R.png */,
+				554509481B87FE010037DCF5 /* SterntalerWalkAnimationR2.png */,
 				554509491B87FE010037DCF5 /* SterntalerWalkAnimation3.png */,
-				5545094A1B87FE010037DCF5 /* SterntalerWalkAnimation3R.png */,
+				5545094A1B87FE010037DCF5 /* SterntalerWalkAnimationR3.png */,
 				5545094B1B87FE010037DCF5 /* SterntalerWalkAnimation4.png */,
-				5545094C1B87FE010037DCF5 /* SterntalerWalkAnimation4R.png */,
+				5545094C1B87FE010037DCF5 /* SterntalerWalkAnimationR4.png */,
 				5545094D1B87FE010037DCF5 /* SterntalerWalkAnimation5.png */,
-				5545094E1B87FE010037DCF5 /* SterntalerWalkAnimation5R.png */,
+				5545094E1B87FE010037DCF5 /* SterntalerWalkAnimationR5.png */,
 				55069C0D1B813CBC00CDD0DB /* MainMenu.xib */,
 				55069C041B813CBC00CDD0DB /* Supporting Files */,
 			);
@@ -249,14 +249,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				554509541B87FE010037DCF5 /* SterntalerWalkAnimation3R.png in Resources */,
+				554509541B87FE010037DCF5 /* SterntalerWalkAnimationR3.png in Resources */,
 				5545094F1B87FE010037DCF5 /* SterntalerWalkAnimation1.png in Resources */,
-				554509581B87FE010037DCF5 /* SterntalerWalkAnimation5R.png in Resources */,
+				554509581B87FE010037DCF5 /* SterntalerWalkAnimationR5.png in Resources */,
 				55069C0C1B813CBC00CDD0DB /* Images.xcassets in Resources */,
-				554509561B87FE010037DCF5 /* SterntalerWalkAnimation4R.png in Resources */,
+				554509561B87FE010037DCF5 /* SterntalerWalkAnimationR4.png in Resources */,
 				554509551B87FE010037DCF5 /* SterntalerWalkAnimation4.png in Resources */,
-				554509501B87FE010037DCF5 /* SterntalerWalkAnimation1R.png in Resources */,
-				554509521B87FE010037DCF5 /* SterntalerWalkAnimation2R.png in Resources */,
+				554509501B87FE010037DCF5 /* SterntalerWalkAnimationR1.png in Resources */,
+				554509521B87FE010037DCF5 /* SterntalerWalkAnimationR2.png in Resources */,
 				554509571B87FE010037DCF5 /* SterntalerWalkAnimation5.png in Resources */,
 				554509511B87FE010037DCF5 /* SterntalerWalkAnimation2.png in Resources */,
 				55069C0F1B813CBC00CDD0DB /* MainMenu.xib in Resources */,

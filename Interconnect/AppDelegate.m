@@ -27,7 +27,8 @@
         ICGActor    *   thePlayer = [ICGActor new];
         thePlayer.owningView = self.gameView;
         thePlayer.pos = NSMakePoint( 600, 200 );
-        thePlayer.leftWalkAnimation = @[ [NSImage imageNamed: @"SterntalerWalkAnimation1"], [NSImage imageNamed: @"SterntalerWalkAnimation2"], [NSImage imageNamed: @"SterntalerWalkAnimation3"], [NSImage imageNamed: @"SterntalerWalkAnimation4"], [NSImage imageNamed: @"SterntalerWalkAnimation5"] ];
+        thePlayer.leftWalkAnimation = [ICGActor animationNamed: @"SterntalerWalkAnimation"];
+        thePlayer.rightWalkAnimation = [ICGActor animationNamed: @"SterntalerWalkAnimationR"];
         thePlayer.animation = thePlayer.leftWalkAnimation;
         NSSize      imgSize = thePlayer.image.size;
         thePlayer.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
