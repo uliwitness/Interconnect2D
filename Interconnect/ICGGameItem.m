@@ -107,7 +107,7 @@
         
         NSRect  balloonRect = { NSZeroPoint, [self.balloonText sizeWithAttributes: balloonAttrs] };
         balloonRect.origin.x = NSMidX(imgBox) -truncf(balloonRect.size.width /2);
-        balloonRect.origin.y = NSMaxY(imgBox) + 8;
+        balloonRect.origin.y = NSMaxY(imgBox) + 16;
         
         NSBezierPath*   balloonPath = [NSBezierPath bezierPathWithRoundedRect: NSInsetRect( balloonRect, -8, -8 ) xRadius: 8 yRadius:8];
         [[NSColor colorWithCalibratedWhite: 0.0 alpha: 0.6] set];
