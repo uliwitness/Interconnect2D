@@ -28,7 +28,7 @@
 {
     if( self.filePath && ![self.gameView writeToFile: self.filePath] )
     {
-        NSRunAlertPanel( @"Failed to save", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
+        NSRunAlertPanel( @"Failed to save previous document", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
         return NO;
     }
     else
