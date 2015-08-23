@@ -464,7 +464,7 @@
         }
     }
     
-    if( minCost != NSUIntegerMax )
+    if( minCost < (NSUIntegerMax -1) )
     {
         [path addPoint: currPos];
         if( minCost != 0 )
