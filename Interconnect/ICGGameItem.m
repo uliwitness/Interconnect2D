@@ -205,6 +205,7 @@
     else
     {
         ICGGamePath *   thePath = [self.owningView.player pathFindToItem: self withObstacles: self.owningView.items];
+        PATHFIND_DBGLOG(@"thePath = %@", thePath);
         self.owningView.movePath = thePath;
     }
     return NO;
@@ -369,14 +370,15 @@
 }
 -(BOOL) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
 {
+    NSUInteger  idx = y * gridWidth + x;
+    
     PATHFIND_DBGLOG( @"Examining %lu,%lu looking for %lu,%lu", x, y, [self xAsInt: otherItem.pos.x gridWidth: gridWidth], [self yAsInt: otherItem.pos.y gridHeight: gridHeight] );
     if( x == [self xAsInt: otherItem.pos.x gridWidth: gridWidth] && y == [self yAsInt: otherItem.pos.y gridHeight: gridHeight] )
     {
         PATHFIND_DBGLOG(@"Found goal!");
+        costGrid[idx] = currCost; // Ensure that we set this even if it is considered inside the periphery of another obstacle, which is what's usually the case if we're right in front of or behind or next to an item when we start.
         return YES; // Found destination! Yay!
     }
-    
-    NSUInteger  idx = y * gridWidth + x;
     
     if( costGrid[idx] == NSUIntegerMax )    // Obstacle, already detected, nothing to do.
     {

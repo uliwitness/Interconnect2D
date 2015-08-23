@@ -52,9 +52,13 @@
         ICGActor    *   thePlayer = [ICGActor new];
         thePlayer.owningView = self.gameView;
         thePlayer.pos = NSMakePoint( 600, 200 );
+        #if 1
         thePlayer.leftWalkAnimation = [ICGAnimation animationNamed: @"SterntalerWalkAnimation"];
         thePlayer.rightWalkAnimation = [ICGAnimation animationNamed: @"SterntalerWalkAnimationR"];
         thePlayer.animation = thePlayer.leftWalkAnimation;
+        #else
+        thePlayer.animation = [ICGAnimation animationNamed: NSImageNameUser];
+        #endif
         NSSize      imgSize = thePlayer.image.size;
         thePlayer.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         ICGGameTool*    tool = [ICGGameTool new];
