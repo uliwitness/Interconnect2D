@@ -472,7 +472,7 @@
 }
 
 
--(BOOL) applyCostAwayToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y fromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
+-(BOOL) applyCostAwayToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y fromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost finalPosX: (NSUInteger*)outX y: (NSUInteger*)outY
 {
     NSUInteger  idx = y * gridWidth + x;
     
@@ -482,6 +482,8 @@
     if( sqrt( (xdist * xdist) + (ydist * ydist) ) >= desiredDistance )
     {
         PATHFIND_DBGLOG(@"Found goal!");
+        *outX = x;
+        *outY = y;
         costGrid[idx] = currCost; // Ensure that we set this even if it is considered inside the periphery of another obstacle, which is what's usually the case if we're right in front of or behind or next to an item when we start.
         return YES; // Found destination! Yay!
     }
@@ -560,7 +562,7 @@
         [self dumpCostGrid: costGrid withWidth: gridWidth height: gridHeight];
         #endif
         
-        if( [self applyCostAwayToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x +currDirection->pos.x y: y+ currDirection->pos.y fromItem: otherItem distance: desiredDistance withObstacles: items currentCost: currCost +1] )
+        if( [self applyCostAwayToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x +currDirection->pos.x y: y+ currDirection->pos.y fromItem: otherItem distance: desiredDistance withObstacles: items currentCost: currCost +1 finalPosX: outX y: outY] )
             return YES; // Found the destination? Terminate early!
         
         currDirection->distance = -1;  // Make sure we don't consider this entry again, we already used it.
@@ -715,7 +717,9 @@
     [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
     #endif
     
-    [self applyCostAwayToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY fromItem: self distance: desiredDistance withObstacles: obstacles currentCost: 0];
+    NSUInteger  outX = startX, outY = startY;
+    
+    [self applyCostAwayToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY fromItem: self distance: desiredDistance withObstacles: obstacles currentCost: 0 finalPosX: &outX y: &outY];
     
     #if PATHFIND_DBG
     [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
@@ -723,7 +727,7 @@
     
     PATHFIND_DBGLOG( @"Determining path from cost:" );
     
-    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: startX y: startY toPath: path];
+    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: outX y: outY toPath: path];
     
     return path;
 }
