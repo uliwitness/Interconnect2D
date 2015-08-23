@@ -266,10 +266,16 @@
     NSUInteger  idx = y * gridWidth + x;
     
     if( costGrid[idx] == NSUIntegerMax )    // Obstacle, already detected, nothing to do.
+    {
+        NSLog(@"Collided(1) at %lu,%lu", (long)x, (long)y);
         return;
+    }
     
     if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
+    {
+        //NSLog(@"Nothing to do at %lu,%lu", (long)x, (long)y);
         return; // Nothing to do then.
+    }
     
     for( ICGGameItem* currItem in items )
     {
@@ -277,10 +283,12 @@
             && (currItem.pos.y / gridHeight) == y ) // Collision!
         {
             costGrid[idx] = NSUIntegerMax;
+            NSLog(@"Collided(2) at %lu,%lu", (long)x, (long)y);
             return;
         }
     }
     
+    //NSLog(@"Cost at %lu,%lu changed from %lu to %lu", (long)x, (long)y, costGrid[idx], currCost );
     costGrid[idx] = currCost;
     currCost ++;
     if( x > 0 )
@@ -295,7 +303,7 @@
     {
         [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y-1 toItem: otherItem withObstacles: items currentCost: currCost];
     }
-    if( x < (gridHeight-1) )
+    if( y < (gridHeight-1) )
     {
         [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y+1 toItem: otherItem withObstacles: items currentCost: currCost];
     }
@@ -340,7 +348,7 @@
             currPos = NSMakePoint(0,-1);
         }
     }
-    if( x < (gridHeight-1) )
+    if( y < (gridHeight-1) )
     {
         NSUInteger  idx2 = (y +1) * gridWidth + x;
         if( costGrid[idx2] < minCost && costGrid[idx2] < costGrid[idx] )
@@ -375,10 +383,16 @@
     for( NSUInteger n = 0; n < (gridWidth * gridHeight); n++ )
         ((NSUInteger*)costGrid.mutableBytes)[n] = NSUIntegerMax -1; // -1 so we have the highest possible number, as we use NSUIntegerMax to indicate it's an obstacle.
     
-    NSUInteger  x = otherItem.pos.x / gridSize,
-                y = otherItem.pos.y / gridSize;
-    [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: x y: y toItem: self withObstacles: obstacles currentCost: 0];
-    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: self.pos.x / gridSize y: self.pos.y / gridSize toPath: path];
+    NSUInteger  destX = otherItem.pos.x / gridSize,
+                destY = otherItem.pos.y / gridSize,
+                startX = self.pos.x / gridSize,
+                startY = self.pos.y / gridSize;
+    NSLog( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
+    [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY toItem: self withObstacles: obstacles currentCost: 0];
+
+    NSLog( @"Determining path from cost:" );
+    
+    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: startX y: startY toPath: path];
     
     return path;
 }
