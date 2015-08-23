@@ -12,6 +12,17 @@
 #import "ICGAnimation.h"
 
 
+@interface ICGGamePath ()
+{
+    ICGGamePathEntry    *   sharedEntry;
+    NSMutableData       *   points;
+}
+
+-(void) addPoint: (NSPoint)pos;
+
+@end
+
+
 @implementation ICGGameItem
 
 -(id)   init
@@ -181,6 +192,11 @@
         [self.owningView.player interactWithNearbyItems: @[ self ] tool: self.defaultTool ? self.defaultTool : nil];
         return YES;
     }
+    else
+    {
+        ICGGamePath *   thePath = [self.owningView.player pathFindToItem: self withObstacles: self.owningView.items];
+        NSLog( @"thePath = %@", thePath );
+    }
     return NO;
 }
 
@@ -244,4 +260,207 @@
     return interacted;
 }
 
+
+-(void) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
+{
+    NSUInteger  idx = y * gridWidth + x;
+    
+    if( costGrid[idx] == NSUIntegerMax )    // Obstacle, already detected, nothing to do.
+        return;
+    
+    if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
+        return; // Nothing to do then.
+    
+    for( ICGGameItem* currItem in items )
+    {
+        if( (currItem.pos.x / gridWidth) == x
+            && (currItem.pos.y / gridHeight) == y ) // Collision!
+        {
+            costGrid[idx] = NSUIntegerMax;
+            return;
+        }
+    }
+    
+    costGrid[idx] = currCost;
+    currCost ++;
+    if( x > 0 )
+    {
+        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x-1 y: y toItem: otherItem withObstacles: items currentCost: currCost];
+    }
+    if( x < (gridWidth-1) )
+    {
+        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x+1 y: y toItem: otherItem withObstacles: items currentCost: currCost];
+    }
+    if( y > 0 )
+    {
+        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y-1 toItem: otherItem withObstacles: items currentCost: currCost];
+    }
+    if( x < (gridHeight-1) )
+    {
+        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y+1 toItem: otherItem withObstacles: items currentCost: currCost];
+    }
+}
+
+
+-(void) addPointsForBestPathInCostGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toPath: (ICGGamePath*)path
+{
+    NSUInteger  idx = y * gridWidth + x;
+    NSPoint     currPos = NSZeroPoint;
+    NSUInteger  minCost = NSUIntegerMax -1;
+    
+    if( costGrid[idx] == 0 )    // Already there?
+        return; // Done.
+    if( costGrid[idx] == NSUIntegerMax )    // Hit obstacle (no way to get closer) ?
+        return; // Done.
+    
+    if( x > 0 )
+    {
+        NSUInteger  idx2 = y * gridWidth + (x -1);
+        if( costGrid[idx2] < minCost && costGrid[idx2] < costGrid[idx] )
+        {
+            minCost = costGrid[idx2];
+            currPos = NSMakePoint(-1,0);
+        }
+    }
+    if( x < (gridWidth-1) )
+    {
+        NSUInteger  idx2 = y * gridWidth + (x +1);
+        if( costGrid[idx2] < minCost && costGrid[idx2] < costGrid[idx] )
+        {
+            minCost = costGrid[idx2];
+            currPos = NSMakePoint(1,0);
+        }
+    }
+    if( y > 0 )
+    {
+        NSUInteger  idx2 = (y -1) * gridWidth + x;
+        if( costGrid[idx2] < minCost && costGrid[idx2] < costGrid[idx] )
+        {
+            minCost = costGrid[idx2];
+            currPos = NSMakePoint(0,-1);
+        }
+    }
+    if( x < (gridHeight-1) )
+    {
+        NSUInteger  idx2 = (y +1) * gridWidth + x;
+        if( costGrid[idx2] < minCost && costGrid[idx2] < costGrid[idx] )
+        {
+            minCost = costGrid[idx2];
+            currPos = NSMakePoint(0,1);
+        }
+    }
+    
+    if( minCost != NSUIntegerMax )
+    {
+        [path addPoint: currPos];
+        if( minCost != 0 )
+        {
+            [self addPointsForBestPathInCostGrid: costGrid withWidth: gridWidth height: gridHeight atX: x + currPos.x y: y + currPos.y toPath: path];
+        }
+    }
+}
+
+
+-(ICGGamePath*) pathFindToItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items
+{
+    ICGGamePath     *path = [ICGGamePath new];
+    CGFloat         gridSize = self.stepSize;
+    NSInteger       gridWidth = self.owningView.bounds.size.width / gridSize;
+    NSInteger       gridHeight = self.owningView.bounds.size.height / gridSize;
+    NSMutableData*  costGrid = [NSMutableData dataWithLength: gridWidth * gridHeight * sizeof(NSUInteger)];
+    NSMutableArray  *obstacles = [items mutableCopy];
+    [obstacles removeObject: self];
+    [obstacles removeObject: otherItem];
+    
+    for( NSUInteger n = 0; n < (gridWidth * gridHeight); n++ )
+        ((NSUInteger*)costGrid.mutableBytes)[n] = NSUIntegerMax -1; // -1 so we have the highest possible number, as we use NSUIntegerMax to indicate it's an obstacle.
+    
+    NSUInteger  x = otherItem.pos.x / gridSize,
+                y = otherItem.pos.y / gridSize;
+    [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: x y: y toItem: self withObstacles: obstacles currentCost: 0];
+    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: self.pos.x / gridSize y: self.pos.y / gridSize toPath: path];
+    
+    return path;
+}
+
 @end
+
+
+@interface ICGGamePathEntry ()
+{
+    NSPoint *   pos;
+}
+
+@end
+
+
+@implementation ICGGamePathEntry
+
+-(CGFloat)  x
+{
+    return pos->x;
+}
+
+-(CGFloat)  y
+{
+    return pos->y;
+}
+
+
+-(void) setPoint: (NSPoint*)newPos
+{
+    pos = newPos;
+}
+
+@end
+
+
+@implementation ICGGamePath
+
+-(id)   init
+{
+    self = [super init];
+    if( self )
+    {
+        sharedEntry = [ICGGamePathEntry new];
+        points = [NSMutableData new];
+    }
+    return self;
+}
+
+-(NSUInteger)   count
+{
+    return points.length / sizeof(NSPoint);
+}
+
+
+-(ICGGamePathEntry*)    objectAtIndexedSubscript: (NSUInteger)idx
+{
+    [sharedEntry setPoint: ((NSPoint*)points.bytes) +idx];
+    return sharedEntry;
+}
+
+
+-(void) addPoint: (NSPoint)pos
+{
+    [points appendBytes: &pos length: sizeof(NSPoint)];
+}
+
+
+-(NSString*)    description
+{
+    NSMutableString*    desc = [NSMutableString stringWithFormat: @"%@<%p> {", self, self];
+    
+    NSUInteger  count = self.count;
+    for( NSUInteger x = 0 ; x < count; x++ )
+    {
+        NSPoint*    pos = ((NSPoint*)points.bytes) +x;
+        [desc appendFormat: @"%s{ %f, %f }", (x != 0) ? " ," : "", pos->x, pos->y];
+    }
+    
+    [desc appendString: @"}"];
+    return desc;
+}
+
+@end
+

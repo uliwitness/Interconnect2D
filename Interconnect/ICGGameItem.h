@@ -14,6 +14,22 @@
 @class ICGAnimation;
 
 
+@interface ICGGamePathEntry : NSObject
+
+-(CGFloat)  x;
+-(CGFloat)  y;
+
+@end
+
+
+@interface ICGGamePath : NSObject
+
+-(NSUInteger)           count;
+-(ICGGamePathEntry*)    objectAtIndexedSubscript: (NSUInteger)idx;
+
+@end
+
+
 @interface ICGGameItem : NSObject <NSCoding>
 
 @property (assign,nonatomic) NSPoint                pos;        // Position of this item in the world
