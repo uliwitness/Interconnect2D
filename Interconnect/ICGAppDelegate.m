@@ -50,6 +50,7 @@
         NSLog(@"Generating sample file.");
         
         ICGActor    *   thePlayer = [ICGActor new];
+        thePlayer.name = @"KateHelios";
         thePlayer.owningView = self.gameView;
         thePlayer.pos = NSMakePoint( 600, 200 );
         #if 1
@@ -68,6 +69,7 @@
         [self.gameView.items addObject: thePlayer];
         
         ICGGameItem*    obstacle = [ICGGameItem new];
+        obstacle.name = @"ColorPanel";
         obstacle.owningView = self.gameView;
         obstacle.pos = NSMakePoint( 650, 190 );
         obstacle.animation = [ICGAnimation animationNamed: NSImageNameColorPanel];
@@ -77,6 +79,7 @@
         [self.gameView.items addObject: obstacle];
 
         obstacle = [ICGGameItem new];
+        obstacle.name = @"Bonjour";
         obstacle.owningView = self.gameView;
         obstacle.pos = NSMakePoint( 550, 150 );
         obstacle.animation = [ICGAnimation animationNamed: NSImageNameBonjour];
