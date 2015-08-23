@@ -28,7 +28,11 @@
 {
     if( self.filePath && ![self.gameView writeToFile: self.filePath] )
     {
-        NSRunAlertPanel( @"Failed to save previous document", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
+        NSAlert *   alert = [NSAlert new];
+        alert.messageText = @"Failed to save previous document";
+        alert.informativeText = [NSString stringWithFormat: @"Couldn't save to %@", self.filePath];
+        [alert addButtonWithTitle: @"OK"];
+        [alert beginSheetModalForWindow: self.window completionHandler:^(NSModalResponse returnCode){}];
         return NO;
     }
     else
@@ -101,7 +105,13 @@
 -(void) saveDocument: (id)sender
 {
     if( ![self.gameView writeToFile: self.filePath] )
-        NSRunAlertPanel( @"Failed to save", @"Couldn't save to %@", @"OK", @"", @"", self.filePath);
+    {
+        NSAlert *   alert = [NSAlert new];
+        alert.messageText = @"Failed to save document";
+        alert.informativeText = [NSString stringWithFormat: @"Couldn't save to %@", self.filePath];
+        [alert addButtonWithTitle: @"OK"];
+        [alert beginSheetModalForWindow: self.window completionHandler:^(NSModalResponse returnCode){}];
+    }
 }
 
 @end
