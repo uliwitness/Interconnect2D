@@ -13,6 +13,7 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="ICGAppDelegate">
             <connections>
+                <outlet property="debugImageView" destination="Jth-cX-V0s" id="2zp-aF-oFw"/>
                 <outlet property="gameView" destination="asD-Ap-SeY" id="Rhb-w7-lYp"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
@@ -667,8 +668,8 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="Interconnect" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+        <window title="Interconnect" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="1280" height="720"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
@@ -688,6 +689,29 @@
                 </constraints>
             </view>
             <point key="canvasLocation" x="-135" y="178"/>
+        </window>
+        <window title="Debug Image" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="uE2-6i-Vka" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES" utility="YES" nonactivatingPanel="YES" HUD="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="120" y="64" width="644" height="378"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <view key="contentView" id="Qph-Fq-LKO">
+                <rect key="frame" x="0.0" y="0.0" width="644" height="378"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Jth-cX-V0s">
+                        <rect key="frame" x="0.0" y="0.0" width="644" height="378"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="KRD-XE-yec"/>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Jth-cX-V0s" firstAttribute="top" secondItem="Qph-Fq-LKO" secondAttribute="top" id="11i-x2-fqv"/>
+                    <constraint firstAttribute="bottom" secondItem="Jth-cX-V0s" secondAttribute="bottom" id="E0N-sy-YjI"/>
+                    <constraint firstAttribute="trailing" secondItem="Jth-cX-V0s" secondAttribute="trailing" id="RyT-9z-E2D"/>
+                    <constraint firstItem="Jth-cX-V0s" firstAttribute="leading" secondItem="Qph-Fq-LKO" secondAttribute="leading" id="rya-ee-wPG"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="479" y="279"/>
         </window>
     </objects>
 </document>

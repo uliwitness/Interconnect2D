@@ -10,6 +10,16 @@
 #import "ICGGameTool.h"
 #import "ICGGameView.h"
 #import "ICGAnimation.h"
+#import "ICGAppDelegate.h"
+
+
+#define PATHFIND_DBG        0
+
+#if PATHFIND_DBG
+#define PATHFIND_DBGLOG(argv...)    NSLog(argv)
+#else
+#define PATHFIND_DBGLOG(argv...)    do{}while(0)
+#endif
 
 
 @interface ICGGamePath ()
@@ -261,52 +271,148 @@
 }
 
 
--(void) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
+#if PATHFIND_DBG
+-(void) dumpCostGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight
 {
+    NSImage*    newImage = [[NSImage alloc] initWithSize: NSMakeSize(gridWidth, gridHeight)];
+    [newImage lockFocus];
+    
+    [NSColor.whiteColor set];
+    [NSBezierPath fillRect: NSMakeRect(0, 0, gridWidth, gridHeight)];
+    
+    for( NSUInteger y = 0 ; y < gridHeight; y++ )
+    {
+        for( NSUInteger x = 0 ; x < gridWidth; x++ )
+        {
+            NSUInteger  currCost = *(costGrid +(y * gridWidth) +x);
+            if( currCost == NSUIntegerMax )
+            {
+                [NSColor.blackColor set];
+                [NSBezierPath strokeLineFromPoint: NSMakePoint(x +0.5,y +0.5) toPoint: NSMakePoint(x +1.5,y +0.5)];
+            }
+            else if( currCost != (NSUIntegerMax -1) )
+            {
+                [[NSColor colorWithCalibratedRed: 0.0 green: 0.0 blue: 1.0 -((double)currCost) / 100.0 alpha: 1.0] set];
+                [NSBezierPath strokeLineFromPoint: NSMakePoint(x +0.5,y +0.5) toPoint: NSMakePoint(x +1.5,y +0.5)];
+            }
+        }
+    }
+    [newImage unlockFocus];
+    
+    NSImageView*    div = [(ICGAppDelegate*)[NSApplication sharedApplication].delegate debugImageView];
+    div.image = newImage;
+    [div.window display];
+    if( ![div.window isVisible] )
+        [div.window orderFront: nil];
+}
+#endif
+
+
+-(BOOL) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
+{
+    PATHFIND_DBGLOG( @"Examining %lu,%lu looking for %lu,%lu", x, y, [self xAsInt: otherItem.pos.x gridWidth: gridWidth], [self yAsInt: otherItem.pos.y gridHeight: gridHeight] );
+    if( x == [self xAsInt: otherItem.pos.x gridWidth: gridWidth] && y == [self yAsInt: otherItem.pos.y gridHeight: gridHeight] )
+    {
+        PATHFIND_DBGLOG(@"Found goal!");
+        return YES; // Found destination! Yay!
+    }
+    
     NSUInteger  idx = y * gridWidth + x;
     
     if( costGrid[idx] == NSUIntegerMax )    // Obstacle, already detected, nothing to do.
     {
-        NSLog(@"Collided(1) at %lu,%lu", (long)x, (long)y);
-        return;
+        PATHFIND_DBGLOG(@"Collided(1) at %lu,%lu", (long)x, (long)y);
+        return NO;
     }
-    
-    if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
+    else if( costGrid[idx] == (NSUIntegerMax -1) )  // Never seend this block before? Detect if obstacle!
     {
-        //NSLog(@"Nothing to do at %lu,%lu", (long)x, (long)y);
-        return; // Nothing to do then.
-    }
-    
-    for( ICGGameItem* currItem in items )
-    {
-        if( (currItem.pos.x / gridWidth) == x
-            && (currItem.pos.y / gridHeight) == y ) // Collision!
+        for( ICGGameItem* currItem in items )
         {
-            costGrid[idx] = NSUIntegerMax;
-            NSLog(@"Collided(2) at %lu,%lu", (long)x, (long)y);
-            return;
+            if( [self xAsInt: currItem.pos.x gridWidth: gridWidth] == x
+                && [self yAsInt: currItem.pos.y gridHeight: gridHeight] == y ) // Collision!
+            {
+                costGrid[idx] = NSUIntegerMax;
+                PATHFIND_DBGLOG(@"Collided(2) at %lu,%lu", (long)x, (long)y);
+                return NO;
+            }
         }
     }
-    
-    //NSLog(@"Cost at %lu,%lu changed from %lu to %lu", (long)x, (long)y, costGrid[idx], currCost );
+
+    if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
+    {
+        PATHFIND_DBGLOG(@"Nothing to do at %lu,%lu", (long)x, (long)y);
+        return NO; // Nothing to do then.
+    }
+
+    PATHFIND_DBGLOG(@"Cost at %lu,%lu changed from %lu to %lu", (long)x, (long)y, costGrid[idx], currCost );
     costGrid[idx] = currCost;
-    currCost ++;
+    
+    #define NUM_DIRECTIONS      4
+    struct ICGWeightedDirection
+    {
+        NSPoint     pos;
+        CGFloat     distance;
+    }   directions[NUM_DIRECTIONS] = {0,0};
+    NSUInteger  currDirIdx = 0;
+    
     if( x > 0 )
     {
-        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x-1 y: y toItem: otherItem withObstacles: items currentCost: currCost];
+        CGFloat xdist = (self.stepSize * (x-1)) -otherItem.pos.x,
+                ydist = (self.stepSize * y) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(-1,0);
+        currDirIdx++;
     }
-    if( x < (gridWidth-1) )
+    if( x < (gridWidth -1) )
     {
-        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x+1 y: y toItem: otherItem withObstacles: items currentCost: currCost];
+        CGFloat xdist = (self.stepSize * (x+1)) -otherItem.pos.x,
+                ydist = (self.stepSize * y) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(1,0);
+        currDirIdx++;
     }
     if( y > 0 )
     {
-        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y-1 toItem: otherItem withObstacles: items currentCost: currCost];
+        CGFloat xdist = (self.stepSize * x) -otherItem.pos.x,
+                ydist = (self.stepSize * (y-1)) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(0,-1);
+        currDirIdx++;
     }
-    if( y < (gridHeight-1) )
+    if( y < (gridHeight -1) )
     {
-        [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x y: y+1 toItem: otherItem withObstacles: items currentCost: currCost];
+        CGFloat xdist = (self.stepSize * x) -otherItem.pos.x,
+                ydist = (self.stepSize * (y +1)) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(0,1);
+        currDirIdx++;
     }
+    assert( currDirIdx <= NUM_DIRECTIONS );  // If you trigger this, either arrays aren't packed or you forgot to enlarge the directions array when adding an if above.
+    
+    struct ICGWeightedDirection *   currDirection = NULL;
+    while( true )
+    {
+        // Find direction entry in direction of target item:
+        for( NSUInteger n = 0; n < currDirIdx; n++ )
+        {
+            if( currDirection == NULL || currDirection->distance > directions[n].distance )
+                currDirection = directions +n;
+        }
+        
+        if( currDirection == NULL || currDirection->distance == DBL_MAX )
+            break;  // Done, no more direction entries left.
+        
+        #if PATHFIND_DBG
+        [self dumpCostGrid: costGrid withWidth: gridWidth height: gridHeight];
+        #endif
+        
+        if( [self applyCostToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x +currDirection->pos.x y: y+ currDirection->pos.y toItem: otherItem withObstacles: items currentCost: currCost +1] )
+            return YES; // Found the destination? Terminate early!
+        
+        currDirection->distance = DBL_MAX;  // Make sure we don't consider this entry again, we already used it.
+    }
+    
+    return NO;
 }
 
 
@@ -369,6 +475,28 @@
 }
 
 
+-(NSInteger)    xAsInt: (CGFloat)x gridWidth: (NSUInteger)gridWidth
+{
+    CGFloat xx = x / self.stepSize;
+    if( xx < 0 )
+        return 0;
+    if( xx >= gridWidth )
+        return gridWidth -1;
+    return xx;
+}
+
+
+-(NSInteger)    yAsInt: (CGFloat)y gridHeight: (NSUInteger)gridHeight
+{
+    CGFloat yy = y / self.stepSize;
+    if( yy < 0 )
+        return 0;
+    if( yy >= gridHeight )
+        return gridHeight -1;
+    return yy;
+}
+
+
 -(ICGGamePath*) pathFindToItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items
 {
     ICGGamePath     *path = [ICGGamePath new];
@@ -383,14 +511,19 @@
     for( NSUInteger n = 0; n < (gridWidth * gridHeight); n++ )
         ((NSUInteger*)costGrid.mutableBytes)[n] = NSUIntegerMax -1; // -1 so we have the highest possible number, as we use NSUIntegerMax to indicate it's an obstacle.
     
-    NSUInteger  destX = otherItem.pos.x / gridSize,
-                destY = otherItem.pos.y / gridSize,
-                startX = self.pos.x / gridSize,
-                startY = self.pos.y / gridSize;
-    NSLog( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
-    [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY toItem: self withObstacles: obstacles currentCost: 0];
+    NSUInteger  destX = [self xAsInt: otherItem.pos.x gridWidth: gridWidth],
+                destY = [self yAsInt: otherItem.pos.y gridHeight: gridHeight];
+    NSUInteger  startX = [self xAsInt: self.pos.x gridWidth: gridWidth],
+                startY = [self yAsInt: self.pos.y gridHeight: gridHeight];
 
-    NSLog( @"Determining path from cost:" );
+    PATHFIND_DBGLOG( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
+    [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY toItem: self withObstacles: obstacles currentCost: 0];
+    
+    #if PATHFIND_DBG
+    [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
+    #endif
+    
+    PATHFIND_DBGLOG( @"Determining path from cost:" );
     
     [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: startX y: startY toPath: path];
     
@@ -463,7 +596,7 @@
 
 -(NSString*)    description
 {
-    NSMutableString*    desc = [NSMutableString stringWithFormat: @"%@<%p> {", self, self];
+    NSMutableString*    desc = [NSMutableString stringWithFormat: @"%@<%p> {", self.className, self];
     
     NSUInteger  count = self.count;
     for( NSUInteger x = 0 ; x < count; x++ )

@@ -10,6 +10,7 @@
 
 @interface ICGAppDelegate : NSObject <NSApplicationDelegate>
 
+@property (weak) IBOutlet NSImageView*  debugImageView;
 
 @end
 
