@@ -13,6 +13,11 @@
 #import "ICGAppDelegate.h"
 
 
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+
+
 #define PATHFIND_DBG        0
 
 #if PATHFIND_DBG
@@ -20,6 +25,14 @@
 #else
 #define PATHFIND_DBGLOG(argv...)    do{}while(0)
 #endif
+
+
+@interface ICGGameItem ()
+{
+    lua_State       *luaState;
+}
+
+@end
 
 
 @interface ICGGamePath ()
@@ -56,6 +69,7 @@
     self = [super init];
     if( self )
     {
+        self.name = [aDecoder decodeObjectForKey: @"ICGName"];
         self.tools = [aDecoder decodeObjectForKey: @"ICGTools"];
         self.tool = [aDecoder decodeObjectForKey: @"ICGTool"];
         self.defaultTool = [aDecoder decodeObjectForKey: @"ICGDefaultTool"];
@@ -75,14 +89,23 @@
         self.pos = p;
         self.animationFrameIndex = [aDecoder decodeInt64ForKey: @"ICGAnimationFrameIndex"];
         self.variables = [[aDecoder decodeObjectForKey: @"ICGVariables"] mutableCopy];
+        self.script = [aDecoder decodeObjectForKey: @"ICGLuaScript"];
     }
     
     return self;
 }
 
 
+-(void) dealloc
+{
+    if( luaState )
+        lua_close(luaState);	// Dispose of the script context.
+}
+
+
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    [aCoder encodeObject: self.name forKey: @"ICGName"];
     [aCoder encodeObject: self.tools forKey: @"ICGTools"];
     [aCoder encodeObject: self.tool forKey: @"ICGTool"];
     [aCoder encodeObject: self.defaultTool forKey: @"ICGDefaultTool"];
@@ -96,6 +119,40 @@
     [aCoder encodeDouble: self.pos.y forKey: @"ICGPosY"];
     [aCoder encodeInt64: self.animationFrameIndex forKey: @"ICGAnimationFrameIndex"];
     [aCoder encodeObject: self.variables forKey: @"ICGVariables"];
+    if( self.script )
+        [aCoder encodeObject: self.script forKey: @"ICGLuaScript"];
+}
+
+
+-(void) setScript:(NSString *)script
+{
+    _script = script;
+    
+    if( luaState )
+        lua_close(luaState);	// Dispose of the script context.
+    
+    luaState = luaL_newstate();	// Create a context.
+    luaL_openlibs(luaState);	// Load Lua standard library.
+
+    // Load the file:
+    const char* str = script.UTF8String;
+    size_t      sz = strlen(str);
+    int s = luaL_loadbuffer(luaState, str, sz, self.name.UTF8String);
+
+    if( s == 0 )
+    {
+        // Run it, with 0 params, (this creates the functions in their globals so we can call them)
+        //  accepting an arbitrary number of return values.
+        //	Last 0 is error handler Lua function's stack index, or 0 to ignore.
+        s = lua_pcall(luaState, 0, LUA_MULTRET, 0);
+    }
+
+    // Was an error? Get error message off the stack and send it back:
+    if( s != 0 )
+    {
+        printf("Error: %s\n", lua_tostring(luaState, -1) );
+        lua_pop(luaState, 1); // Remove error message from stack.
+    }
 }
 
 

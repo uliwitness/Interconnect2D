@@ -32,6 +32,8 @@
 
 @interface ICGGameItem : NSObject <NSCoding>
 
+@property (copy,nonatomic) NSString*                name;
+@property (copy,nonatomic) NSString*                script;
 @property (assign,nonatomic) NSPoint                pos;        // Position of this item in the world
 @property (assign,nonatomic) NSSize                 posOffset;  // How to align the image over pos.
 @property (strong,nonatomic) ICGAnimation*          animation;  // The current series of images.

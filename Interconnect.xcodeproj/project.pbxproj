@@ -477,6 +477,7 @@
 					"$(PROJECT_DIR)/lua/src",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = lua/src/;
 			};
 			name = Debug;
 		};
@@ -492,6 +493,7 @@
 					"$(PROJECT_DIR)/lua/src",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = lua/src/;
 			};
 			name = Release;
 		};
