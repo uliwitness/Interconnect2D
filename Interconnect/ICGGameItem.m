@@ -287,12 +287,12 @@
             NSUInteger  currCost = *(costGrid +(y * gridWidth) +x);
             if( currCost == NSUIntegerMax )
             {
-                [NSColor.blackColor set];
+                [NSColor.lightGrayColor set];
                 [NSBezierPath strokeLineFromPoint: NSMakePoint(x +0.5,y +0.5) toPoint: NSMakePoint(x +1.5,y +0.5)];
             }
             else if( currCost != (NSUIntegerMax -1) )
             {
-                [[NSColor colorWithCalibratedRed: 0.0 green: 0.0 blue: 1.0 -((double)currCost) / 100.0 alpha: 1.0] set];
+                [NSColor.redColor set];
                 [NSBezierPath strokeLineFromPoint: NSMakePoint(x +0.5,y +0.5) toPoint: NSMakePoint(x +1.5,y +0.5)];
             }
         }
@@ -308,6 +308,65 @@
 #endif
 
 
+-(void) blockOffSurroundingsOfObstacls: (NSArray*)items inGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight
+{
+    for( ICGGameItem* currItem in items )
+    {
+        NSUInteger  x = [self xAsInt: currItem.pos.x gridWidth: gridWidth],
+                    y = [self yAsInt: currItem.pos.y gridHeight: gridHeight];
+        NSUInteger  idx = (y * gridWidth) + x;
+        
+        costGrid[idx] = NSUIntegerMax;
+        CGFloat distanceToPass = ceilf((currItem.image.size.width +self.image.size.width) / 2); // +++ Account for posOffset
+        if( idx >= gridWidth )  // Still a row above ours?
+        {
+            costGrid[ idx -gridWidth ] = NSUIntegerMax; // Consider field above this one a blocker, too.
+        }
+        if( (idx +gridWidth) < (gridWidth * gridHeight) )  // Still a row below ours?
+        {
+            costGrid[ idx +gridWidth ] = NSUIntegerMax; // Consider field below this one a blocker, too.
+        }
+        if( self.stepSize < distanceToPass )
+        {
+            CGFloat     distance = distanceToPass;
+            NSUInteger  passIdx = idx;
+            while( distance > 0 )
+            {
+                if( (passIdx % gridWidth) == 0 )
+                    break;
+                passIdx--;
+                distance -= self.stepSize;
+                costGrid[passIdx] = NSUIntegerMax;  // Consider field left of this one a blocker, too, would be covered by the sprite's image.
+                if( passIdx >= gridWidth )  // Still a row above ours?
+                {
+                    costGrid[ passIdx -gridWidth ] = NSUIntegerMax; // Consider field above this one a blocker, too.
+                }
+                if( (passIdx +gridWidth) < (gridWidth * gridHeight) )  // Still a row below ours?
+                {
+                    costGrid[ passIdx +gridWidth ] = NSUIntegerMax; // Consider field below this one a blocker, too.
+                }
+            }
+            distance = distanceToPass;
+            passIdx = idx;
+            while( distance > 0 )
+            {
+                if( (passIdx % gridWidth) == (gridWidth -1) )
+                    break;
+                passIdx++;
+                distance -= self.stepSize;
+                costGrid[passIdx] = NSUIntegerMax;  // Consider field right of this one a blocker, too, would be covered by the sprite's image.
+                if( passIdx >= gridWidth )  // Still a row above ours?
+                {
+                    costGrid[ passIdx -gridWidth ] = NSUIntegerMax; // Consider field above this one a blocker, too.
+                }
+                if( (passIdx +gridWidth) < (gridWidth * gridHeight) )  // Still a row below ours?
+                {
+                    costGrid[ passIdx +gridWidth ] = NSUIntegerMax; // Consider field below this one a blocker, too.
+                }
+            }
+        }
+    }
+}
 -(BOOL) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
 {
     PATHFIND_DBGLOG( @"Examining %lu,%lu looking for %lu,%lu", x, y, [self xAsInt: otherItem.pos.x gridWidth: gridWidth], [self yAsInt: otherItem.pos.y gridHeight: gridHeight] );
@@ -323,19 +382,6 @@
     {
         PATHFIND_DBGLOG(@"Collided(1) at %lu,%lu", (long)x, (long)y);
         return NO;
-    }
-    else if( costGrid[idx] == (NSUIntegerMax -1) )  // Never seend this block before? Detect if obstacle!
-    {
-        for( ICGGameItem* currItem in items )
-        {
-            if( [self xAsInt: currItem.pos.x gridWidth: gridWidth] == x
-                && [self yAsInt: currItem.pos.y gridHeight: gridHeight] == y ) // Collision!
-            {
-                costGrid[idx] = NSUIntegerMax;
-                PATHFIND_DBGLOG(@"Collided(2) at %lu,%lu", (long)x, (long)y);
-                return NO;
-            }
-        }
     }
 
     if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
@@ -517,6 +563,11 @@
                 startY = [self yAsInt: self.pos.y gridHeight: gridHeight];
 
     PATHFIND_DBGLOG( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
+    [self blockOffSurroundingsOfObstacls: obstacles inGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight];
+    #if PATHFIND_DBG
+    [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
+    #endif
+    
     [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY toItem: self withObstacles: obstacles currentCost: 0];
     
     #if PATHFIND_DBG
