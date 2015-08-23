@@ -324,7 +324,7 @@
         NSUInteger  idx = (y * gridWidth) + x;
         
         costGrid[idx] = NSUIntegerMax;
-        CGFloat distanceToPass = ceilf((currItem.image.size.width +self.image.size.width) / 2); // +++ Account for posOffset
+        CGFloat distanceToPass = ceilf((currItem.image.size.width +self.image.size.width) / 2);  // +++ Properly account for posOffset.
         if( idx >= gridWidth )  // Still a row above ours?
         {
             costGrid[ idx -gridWidth ] = NSUIntegerMax; // Consider field above this one a blocker, too.
@@ -719,6 +719,7 @@
     
     NSUInteger  outX = startX, outY = startY;
     
+    desiredDistance += ceilf((otherItem.image.size.width +self.image.size.width) / 2);  // +++ Properly account for posOffset.
     [self applyCostAwayToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY fromItem: self distance: desiredDistance withObstacles: obstacles currentCost: 0 finalPosX: &outX y: &outY];
     
     #if PATHFIND_DBG
