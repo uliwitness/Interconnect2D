@@ -131,27 +131,30 @@
     if( luaState )
         lua_close(luaState);	// Dispose of the script context.
     
-    luaState = luaL_newstate();	// Create a context.
-    luaL_openlibs(luaState);	// Load Lua standard library.
-
-    // Load the file:
-    const char* str = script.UTF8String;
-    size_t      sz = strlen(str);
-    int s = luaL_loadbuffer(luaState, str, sz, self.name.UTF8String);
-
-    if( s == 0 )
+    if( script )
     {
-        // Run it, with 0 params, (this creates the functions in their globals so we can call them)
-        //  accepting an arbitrary number of return values.
-        //	Last 0 is error handler Lua function's stack index, or 0 to ignore.
-        s = lua_pcall(luaState, 0, LUA_MULTRET, 0);
-    }
+        luaState = luaL_newstate();	// Create a context.
+        luaL_openlibs(luaState);	// Load Lua standard library.
 
-    // Was an error? Get error message off the stack and send it back:
-    if( s != 0 )
-    {
-        printf("Error: %s\n", lua_tostring(luaState, -1) );
-        lua_pop(luaState, 1); // Remove error message from stack.
+        // Load the file:
+        const char* str = script.UTF8String;
+        size_t      sz = strlen(str);
+        int s = luaL_loadbuffer(luaState, str, sz, self.name.UTF8String);
+
+        if( s == 0 )
+        {
+            // Run it, with 0 params, (this creates the functions in their globals so we can call them)
+            //  accepting an arbitrary number of return values.
+            //	Last 0 is error handler Lua function's stack index, or 0 to ignore.
+            s = lua_pcall(luaState, 0, LUA_MULTRET, 0);
+        }
+
+        // Was an error? Get error message off the stack and send it back:
+        if( s != 0 )
+        {
+            printf("Error: %s\n", lua_tostring(luaState, -1) );
+            lua_pop(luaState, 1); // Remove error message from stack.
+        }
     }
 }
 
