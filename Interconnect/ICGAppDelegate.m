@@ -71,6 +71,15 @@
         obstacle.defaultTool = self.gameView.player.talkTool;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         [self.gameView.items addObject: obstacle];
+
+        obstacle = [ICGGameItem new];
+        obstacle.owningView = self.gameView;
+        obstacle.pos = NSMakePoint( 550, 150 );
+        obstacle.animation = [ICGAnimation animationNamed: NSImageNameBonjour];
+        imgSize = obstacle.image.size;
+        obstacle.defaultTool = self.gameView.player.talkTool;
+        obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        [self.gameView.items addObject: obstacle];
         
         [self.gameView refreshItemDisplay];
     }
