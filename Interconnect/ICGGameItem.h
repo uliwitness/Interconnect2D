@@ -35,7 +35,7 @@
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
 -(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;
--(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items;
+-(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items;  // Either moves, or returns which item we'd collide with if we moved.
 
 -(void)     advanceAnimation;
 
