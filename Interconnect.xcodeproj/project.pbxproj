@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		557DBEF11B8A763500470F05 /* liblua.a */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 557DBEF21B8A763500470F05 /* Build configuration list for PBXAggregateTarget "liblua.a" */;
+			buildPhases = (
+				557DBEF51B8A763F00470F05 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = liblua.a;
+			productName = liblua.a;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C071B813CBC00CDD0DB /* ICGAppDelegate.m */; };
 		55069C0A1B813CBC00CDD0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 55069C091B813CBC00CDD0DB /* main.m */; };
@@ -26,6 +40,7 @@
 		557247271B87D8A300747C6A /* ICGGameItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 557247261B87D8A300747C6A /* ICGGameItem.m */; };
 		557DBEE81B88877800470F05 /* ICGActor.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEE71B88877800470F05 /* ICGActor.m */; };
 		557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEEB1B88A3F200470F05 /* ICGAnimation.m */; };
+		557DBEF81B8A780800470F05 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 557DBEF71B8A780800470F05 /* liblua.a */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +51,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 55069C001B813CBC00CDD0DB;
 			remoteInfo = Interconnect;
+		};
+		557DBEFA1B8A78C500470F05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 55069BF91B813CBC00CDD0DB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 557DBEF11B8A763500470F05;
+			remoteInfo = liblua.a;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -68,6 +90,8 @@
 		557DBEE71B88877800470F05 /* ICGActor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGActor.m; sourceTree = "<group>"; };
 		557DBEEA1B88A3F200470F05 /* ICGAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGAnimation.h; sourceTree = "<group>"; };
 		557DBEEB1B88A3F200470F05 /* ICGAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGAnimation.m; sourceTree = "<group>"; };
+		557DBEF71B8A780800470F05 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = lua/src/liblua.a; sourceTree = SOURCE_ROOT; };
+		557DBEF91B8A781900470F05 /* lua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lua.h; path = lua/src/lua.h; sourceTree = SOURCE_ROOT; };
 		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,6 +101,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557DBEF81B8A780800470F05 /* liblua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +139,7 @@
 				55069C061B813CBC00CDD0DB /* ICGAppDelegate.h */,
 				55069C071B813CBC00CDD0DB /* ICGAppDelegate.m */,
 				557DBEE91B888BB100470F05 /* Engine */,
+				557DBEF61B8A77E900470F05 /* Lua */,
 				55069C0B1B813CBC00CDD0DB /* Images.xcassets */,
 				554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */,
 				554509461B87FE010037DCF5 /* SterntalerWalkAnimationR1.png */,
@@ -174,6 +200,15 @@
 			name = Engine;
 			sourceTree = "<group>";
 		};
+		557DBEF61B8A77E900470F05 /* Lua */ = {
+			isa = PBXGroup;
+			children = (
+				557DBEF91B8A781900470F05 /* lua.h */,
+				557DBEF71B8A780800470F05 /* liblua.a */,
+			);
+			name = Lua;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -188,6 +223,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				557DBEFB1B8A78C500470F05 /* PBXTargetDependency */,
 			);
 			name = Interconnect;
 			productName = Interconnect;
@@ -228,6 +264,9 @@
 						CreatedOnToolsVersion = 6.4;
 						TestTargetID = 55069C001B813CBC00CDD0DB;
 					};
+					557DBEF11B8A763500470F05 = {
+						CreatedOnToolsVersion = 6.4;
+					};
 				};
 			};
 			buildConfigurationList = 55069BFC1B813CBC00CDD0DB /* Build configuration list for PBXProject "Interconnect" */;
@@ -245,6 +284,7 @@
 			targets = (
 				55069C001B813CBC00CDD0DB /* Interconnect */,
 				55069C131B813CBC00CDD0DB /* InterconnectTests */,
+				557DBEF11B8A763500470F05 /* liblua.a */,
 			);
 		};
 /* End PBXProject section */
@@ -278,6 +318,24 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		557DBEF51B8A763F00470F05 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PROJECT_DIRECTORY}/lua/src/lua.h",
+			);
+			outputPaths = (
+				"${PROJECT_DIRECTORY}/lua/src/liblua.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${PROJECT_DIR}/lua/src/\nif [ ! -f luaconf.h ]; then\n    cp luaconf.h.orig luaconf.h\nfi\nmake macosx\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		55069BFD1B813CBC00CDD0DB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -308,6 +366,11 @@
 			isa = PBXTargetDependency;
 			target = 55069C001B813CBC00CDD0DB /* Interconnect */;
 			targetProxy = 55069C151B813CBC00CDD0DB /* PBXContainerItemProxy */;
+		};
+		557DBEFB1B8A78C500470F05 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 557DBEF11B8A763500470F05 /* liblua.a */;
+			targetProxy = 557DBEFA1B8A78C500470F05 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -409,6 +472,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Interconnect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lua/src",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -420,6 +487,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Interconnect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lua/src",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -460,6 +531,20 @@
 			};
 			name = Release;
 		};
+		557DBEF31B8A763500470F05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		557DBEF41B8A763500470F05 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -489,6 +574,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		557DBEF21B8A763500470F05 /* Build configuration list for PBXAggregateTarget "liblua.a" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				557DBEF31B8A763500470F05 /* Debug */,
+				557DBEF41B8A763500470F05 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
