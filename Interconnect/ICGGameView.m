@@ -462,7 +462,12 @@
     }
 
     ICGGamePathEntry* moveDist = self.movePath[self.moveIndex];
-    [self moveByX: moveDist.x * self.player.stepSize y: moveDist.y * self.player.stepSize];
+    if( [self moveByX: moveDist.x * self.player.stepSize y: moveDist.y * self.player.stepSize] != nil )
+    {   // Collided with something, path probably outdated. Don't amble about after we've missed a step.
+        [sender invalidate];
+        self.movePath = nil;
+        self.moveTimer = nil;
+    }
     
     self.moveIndex = self.moveIndex +1; // If this was the last item, next timer fire will catch it.
 }
