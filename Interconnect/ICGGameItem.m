@@ -187,19 +187,34 @@
 
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem
 {
-    CGFloat xdiff = self.pos.x -otherItem.pos.x;
-    CGFloat ydiff = self.pos.y -otherItem.pos.y;
-    CGFloat centerDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
-    xdiff = self.pos.x -self.posOffset.width -(otherItem.pos.x -otherItem.posOffset.width);
-    CGFloat leftDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
-    xdiff = self.pos.x -self.posOffset.width +self.image.size.width -(otherItem.pos.x -otherItem.posOffset.width +otherItem.image.size.width);
-    CGFloat rightDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+    CGFloat myLeft = self.pos.x -self.posOffset.width,
+            myRight = self.pos.x -self.posOffset.width +self.image.size.width,
+            otherLeft = otherItem.pos.x -otherItem.posOffset.width,
+            otherRight = otherItem.pos.x -otherItem.posOffset.width +otherItem.image.size.width;
+    CGFloat distance = DBL_MAX;
     
-    CGFloat distance = leftDistance;
-    if( distance > rightDistance )
-        distance = rightDistance;
-    if( distance > centerDistance )
-        distance = centerDistance;
+    // Our sprite's horizontal line (parallel to the other's!) covers some of the same X area?
+    if( (myLeft <= otherRight && myLeft >= otherLeft)
+        || (myRight <= otherRight && myRight >= otherLeft)
+        || (myLeft <= otherLeft && myRight >= otherRight) )
+    {
+        // Shortest possible distance between any of the points of two parallel, horizontal lines is Y distance:
+        distance = fabs(self.pos.y -otherItem.pos.y);
+    }
+    else
+    {
+        // Otherwise we're off to one side, so closest point is either our left or right end to theirs,
+        //  so calculate that distance (which may have an odd angle):
+        CGFloat xdiff = myLeft -otherRight;
+        CGFloat ydiff = self.pos.y -otherItem.pos.y;
+        CGFloat leftDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+        xdiff = myRight -otherLeft;
+        CGFloat rightDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+        
+        distance = leftDistance;
+        if( distance > rightDistance )
+            distance = rightDistance;
+    }
     
     return distance;
 }
