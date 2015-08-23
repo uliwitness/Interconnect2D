@@ -189,7 +189,19 @@
 {
     CGFloat xdiff = self.pos.x -otherItem.pos.x;
     CGFloat ydiff = self.pos.y -otherItem.pos.y;
-    return sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+    CGFloat centerDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+    xdiff = self.pos.x -self.posOffset.width -(otherItem.pos.x -otherItem.posOffset.width);
+    CGFloat leftDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+    xdiff = self.pos.x -self.posOffset.width +self.image.size.width -(otherItem.pos.x -otherItem.posOffset.width +otherItem.image.size.width);
+    CGFloat rightDistance = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+    
+    CGFloat distance = leftDistance;
+    if( distance > rightDistance )
+        distance = rightDistance;
+    if( distance > centerDistance )
+        distance = centerDistance;
+    
+    return distance;
 }
 
 
