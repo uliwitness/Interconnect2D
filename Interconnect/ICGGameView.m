@@ -15,8 +15,7 @@
 // The bigger this number, the more subtle the perspective effect:
 #define PERSPECTIVE_SCALE_MULTIPLIER        700
 
-#define STEP_SIZE                           5
-#define KEY_REPEAT_THRESHOLD                0.15     // seconds to wait before sending first key repeat.
+#define KEY_REPEAT_THRESHOLD                0.15    // seconds to wait before sending first key repeat.
 #define KEY_REPEAT_INTERVAL                 0.05    // Seconds to wait between each key repeat.
 
 
@@ -51,6 +50,8 @@
 
 @property (retain,nonatomic) NSMutableArray*        pressedKeys;
 @property (retain,nonatomic) NSTimer*               keyRepeatTimer;
+@property (assign,nonatomic) NSUInteger             moveIndex;
+@property (retain,nonatomic) NSTimer*               moveTimer;
 
 @end
 
@@ -429,25 +430,53 @@
 
 -(void) moveLeft
 {
-    [self moveByX: -STEP_SIZE y: 0];
+    [self moveByX: -self.player.stepSize y: 0];
 }
 
 
 -(void) moveRight
 {
-    [self moveByX: STEP_SIZE y: 0];
+    [self moveByX: self.player.stepSize y: 0];
 }
 
 
 -(void) moveUp
 {
-    [self moveByX: 0 y: STEP_SIZE];
+    [self moveByX: 0 y: self.player.stepSize];
 }
 
 
 -(void) moveDown
 {
-    [self moveByX: 0 y: -STEP_SIZE];
+    [self moveByX: 0 y: -self.player.stepSize];
+}
+
+
+-(void) advanceMovePath: (NSTimer*)sender
+{
+    if( self.moveIndex >= self.movePath.count ) // Do this first, in case some nit hands us an empty path:
+    {
+        [sender invalidate];
+        self.movePath = nil;
+        self.moveTimer = nil;
+    }
+
+    ICGGamePathEntry* moveDist = self.movePath[self.moveIndex];
+    [self moveByX: moveDist.x * self.player.stepSize y: moveDist.y * self.player.stepSize];
+    
+    self.moveIndex = self.moveIndex +1; // If this was the last item, next timer fire will catch it.
+}
+
+
+-(void) setMovePath:(ICGGamePath *)movePath
+{
+    _movePath = movePath;
+    _moveIndex = 0;
+    
+    if( self.moveTimer == nil )
+    {
+        self.moveTimer = [NSTimer scheduledTimerWithTimeInterval: 0.05 target: self selector: @selector(advanceMovePath:) userInfo: nil repeats: YES];
+    }
 }
 
 

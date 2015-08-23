@@ -205,7 +205,7 @@
     else
     {
         ICGGamePath *   thePath = [self.owningView.player pathFindToItem: self withObstacles: self.owningView.items];
-        NSLog( @"thePath = %@", thePath );
+        self.owningView.movePath = thePath;
     }
     return NO;
 }
