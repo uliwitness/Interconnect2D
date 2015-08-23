@@ -65,6 +65,7 @@
     {
         self.pressedKeys = [NSMutableArray new];
         self.items = [NSMutableArray new];
+        self.variables = [NSMutableDictionary new];
 
         self.keyRepeatTimer = [NSTimer scheduledTimerWithTimeInterval: 0.01 target: self selector: @selector(checkForKeyRepeats:) userInfo: nil repeats: YES];
         [self.keyRepeatTimer setFireDate: [NSDate distantFuture]];
