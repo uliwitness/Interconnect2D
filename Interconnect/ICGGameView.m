@@ -453,7 +453,7 @@
 
 -(BOOL) writeToFile: (NSString*)inFilePath
 {
-    NSData  *   theData = [NSKeyedArchiver archivedDataWithRootObject: @{ @"player": self.player, @"items": self.items }];
+    NSData  *   theData = [NSKeyedArchiver archivedDataWithRootObject: @{ @"player": self.player, @"items": self.items, @"variables": self.variables }];
     return [theData writeToFile: inFilePath atomically: YES];
 }
 
@@ -466,6 +466,7 @@
     NSDictionary    *   dict = [NSKeyedUnarchiver unarchiveObjectWithData: theData];
     self.player = dict[@"player"];
     self.items = [dict[@"items"] mutableCopy];
+    self.variables = [dict[@"variables"] mutableCopy];
     for( ICGGameItem* currItem in self.items )
     {
         currItem.owningView = self;

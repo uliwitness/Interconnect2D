@@ -23,6 +23,7 @@
         self.image = [NSImage imageNamed: NSImageNameApplicationIcon];
         self.posOffset = NSMakeSize( truncf(self.image.size.width /2), 0 );
         self.stepSize = 5;
+        self.variables = [NSMutableDictionary new];
     }
     
     return self;
@@ -52,6 +53,7 @@
         p.y = [aDecoder decodeDoubleForKey: @"ICGPosY"];
         self.pos = p;
         self.animationFrameIndex = [aDecoder decodeInt64ForKey: @"ICGAnimationFrameIndex"];
+        self.variables = [[aDecoder decodeObjectForKey: @"ICGVariables"] mutableCopy];
     }
     
     return self;
@@ -72,6 +74,7 @@
     [aCoder encodeDouble: self.pos.x forKey: @"ICGPosX"];
     [aCoder encodeDouble: self.pos.y forKey: @"ICGPosY"];
     [aCoder encodeInt64: self.animationFrameIndex forKey: @"ICGAnimationFrameIndex"];
+    [aCoder encodeObject: self.variables forKey: @"ICGVariables"];
 }
 
 

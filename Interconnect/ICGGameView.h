@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
 
 @property (retain,nonatomic) NSMutableArray*        items;
 @property (retain,nonatomic) ICGGameItem*           player;
+@property (retain,nonatomic) NSMutableDictionary*   variables;
 
 -(void) interactWithTool: (ICGGameTool*)inTool;
 -(void) switchTool;
