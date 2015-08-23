@@ -48,10 +48,13 @@
 @property (assign,nonatomic) NSInteger              animationFrameIndex;// Private. Index of 'image' in 'animation.frames'.
 
 -(void)     drawInRect: (NSRect)imgBox;
--(BOOL)     mouseDownAtPoint: (NSPoint)pos;
+-(BOOL)     mouseDownAtPoint: (NSPoint)pos modifiers: (NSEventModifierFlags)mods;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;
 -(BOOL)     interactWithNearbyItems: (NSArray*)nearbyItems tool: (ICGGameTool*)inTool;
 -(ICGGameItem*) moveByX: (CGFloat)x y: (CGFloat)y collidingWithItems: (NSArray*)items;  // Either moves, or returns which item we'd collide with if we moved.
+
+-(ICGGamePath*) pathFindToItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items; // Walk towards a target.
+-(ICGGamePath*) pathFindAwayFromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items;    // Run away from a threat.
 
 -(void)     advanceAnimation;
 

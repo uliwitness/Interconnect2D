@@ -189,7 +189,7 @@
         {
             NSPoint     convertedHitPos = { (hitPos.x -imgBox.origin.x) / (currItem.image.size.width / imgBox.size.width),
                                             (hitPos.y -imgBox.origin.y) / (currItem.image.size.height / imgBox.size.height)};
-            if( [currItem mouseDownAtPoint: convertedHitPos] )  // Was hit! We're done looping!
+            if( [currItem mouseDownAtPoint: convertedHitPos modifiers: theEvent.modifierFlags] )  // Was hit! We're done looping!
                 return NO;
         }
         

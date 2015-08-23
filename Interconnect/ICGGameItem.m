@@ -195,9 +195,15 @@
 }
 
 
--(BOOL) mouseDownAtPoint: (NSPoint)pos
+-(BOOL) mouseDownAtPoint: (NSPoint)pos modifiers: (NSEventModifierFlags)mods
 {
-    if( self.isInteractible )
+    if( (mods & NSAlternateKeyMask) != 0 )
+    {
+        ICGGamePath *   thePath = [self.owningView.player pathFindAwayFromItem: self distance: self.owningView.player.stepSize * 10 withObstacles: self.owningView.items];
+        PATHFIND_DBGLOG(@"thePath = %@", thePath);
+        self.owningView.movePath = thePath;
+    }
+    else if( self.isInteractible )
     {
         [self.owningView.player interactWithNearbyItems: @[ self ] tool: self.defaultTool ? self.defaultTool : nil];
         return YES;
@@ -309,7 +315,7 @@
 #endif
 
 
--(void) blockOffSurroundingsOfObstacls: (NSArray*)items inGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight
+-(void) blockOffSurroundingsOfObstacles: (NSArray*)items inGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight
 {
     for( ICGGameItem* currItem in items )
     {
@@ -368,6 +374,8 @@
         }
     }
 }
+
+
 -(BOOL) applyCostToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y toItem: (ICGGameItem*)otherItem withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
 {
     NSUInteger  idx = y * gridWidth + x;
@@ -458,6 +466,104 @@
             return YES; // Found the destination? Terminate early!
         
         currDirection->distance = DBL_MAX;  // Make sure we don't consider this entry again, we already used it.
+    }
+    
+    return NO;
+}
+
+
+-(BOOL) applyCostAwayToGrid: (NSUInteger*)costGrid withWidth: (NSUInteger)gridWidth height: (NSUInteger)gridHeight atX: (NSUInteger)x y: (NSUInteger)y fromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items currentCost: (NSUInteger)currCost
+{
+    NSUInteger  idx = y * gridWidth + x;
+    
+    PATHFIND_DBGLOG( @"Examining %lu,%lu looking for %lu,%lu", x, y, [self xAsInt: otherItem.pos.x gridWidth: gridWidth], [self yAsInt: otherItem.pos.y gridHeight: gridHeight] );
+    CGFloat xdist = (self.stepSize * (x-1)) -otherItem.pos.x,
+            ydist = (self.stepSize * y) -otherItem.pos.y;
+    if( sqrt( (xdist * xdist) + (ydist * ydist) ) >= desiredDistance )
+    {
+        PATHFIND_DBGLOG(@"Found goal!");
+        costGrid[idx] = currCost; // Ensure that we set this even if it is considered inside the periphery of another obstacle, which is what's usually the case if we're right in front of or behind or next to an item when we start.
+        return YES; // Found destination! Yay!
+    }
+    
+    if( costGrid[idx] == NSUIntegerMax )    // Obstacle, already detected, nothing to do.
+    {
+        PATHFIND_DBGLOG(@"Collided(1) at %lu,%lu", (long)x, (long)y);
+        return NO;
+    }
+
+    if( costGrid[idx] < currCost )    // We already set this one? And it's cheaper than ours?
+    {
+        PATHFIND_DBGLOG(@"Nothing to do at %lu,%lu", (long)x, (long)y);
+        return NO; // Nothing to do then.
+    }
+
+    PATHFIND_DBGLOG(@"Cost at %lu,%lu changed from %lu to %lu", (long)x, (long)y, costGrid[idx], currCost );
+    costGrid[idx] = currCost;
+    
+    #define NUM_DIRECTIONS      4
+    struct ICGWeightedDirection
+    {
+        NSPoint     pos;
+        CGFloat     distance;
+    }   directions[NUM_DIRECTIONS] = {0,0};
+    NSUInteger  currDirIdx = 0;
+    
+    if( x > 0 )
+    {
+        CGFloat xdist = (self.stepSize * (x-1)) -otherItem.pos.x,
+                ydist = (self.stepSize * y) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(-1,0);
+        currDirIdx++;
+    }
+    if( x < (gridWidth -1) )
+    {
+        CGFloat xdist = (self.stepSize * (x+1)) -otherItem.pos.x,
+                ydist = (self.stepSize * y) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(1,0);
+        currDirIdx++;
+    }
+    if( y > 0 )
+    {
+        CGFloat xdist = (self.stepSize * x) -otherItem.pos.x,
+                ydist = (self.stepSize * (y-1)) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(0,-1);
+        currDirIdx++;
+    }
+    if( y < (gridHeight -1) )
+    {
+        CGFloat xdist = (self.stepSize * x) -otherItem.pos.x,
+                ydist = (self.stepSize * (y +1)) -otherItem.pos.y;
+        directions[currDirIdx].distance = sqrt( (xdist * xdist) + (ydist * ydist) );
+        directions[currDirIdx].pos = NSMakePoint(0,1);
+        currDirIdx++;
+    }
+    assert( currDirIdx <= NUM_DIRECTIONS );  // If you trigger this, either arrays aren't packed or you forgot to enlarge the directions array when adding an if above.
+    
+    struct ICGWeightedDirection *   currDirection = NULL;
+    while( true )
+    {
+        // Find direction entry in opposite direction of threatening item:
+        for( NSUInteger n = 0; n < currDirIdx; n++ )
+        {
+            if( currDirection == NULL || currDirection->distance < directions[n].distance )
+                currDirection = directions +n;
+        }
+        
+        if( currDirection == NULL || currDirection->distance == -1 )
+            break;  // Done, no more direction entries left.
+        
+        #if PATHFIND_DBG
+        [self dumpCostGrid: costGrid withWidth: gridWidth height: gridHeight];
+        #endif
+        
+        if( [self applyCostAwayToGrid: costGrid withWidth: gridWidth height: gridHeight atX: x +currDirection->pos.x y: y+ currDirection->pos.y fromItem: otherItem distance: desiredDistance withObstacles: items currentCost: currCost +1] )
+            return YES; // Found the destination? Terminate early!
+        
+        currDirection->distance = -1;  // Make sure we don't consider this entry again, we already used it.
     }
     
     return NO;
@@ -565,12 +671,51 @@
                 startY = [self yAsInt: self.pos.y gridHeight: gridHeight];
 
     PATHFIND_DBGLOG( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
-    [self blockOffSurroundingsOfObstacls: obstacles inGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight];
+    [self blockOffSurroundingsOfObstacles: obstacles inGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight];
     #if PATHFIND_DBG
     [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
     #endif
     
     [otherItem applyCostToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY toItem: self withObstacles: obstacles currentCost: 0];
+    
+    #if PATHFIND_DBG
+    [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
+    #endif
+    
+    PATHFIND_DBGLOG( @"Determining path from cost:" );
+    
+    [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: startX y: startY toPath: path];
+    
+    return path;
+}
+
+
+-(ICGGamePath*) pathFindAwayFromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items
+{
+    ICGGamePath     *path = [ICGGamePath new];
+    CGFloat         gridSize = self.stepSize;
+    NSInteger       gridWidth = self.owningView.bounds.size.width / gridSize;
+    NSInteger       gridHeight = self.owningView.bounds.size.height / gridSize;
+    NSMutableData*  costGrid = [NSMutableData dataWithLength: gridWidth * gridHeight * sizeof(NSUInteger)];
+    NSMutableArray  *obstacles = [items mutableCopy];
+    [obstacles removeObject: self];
+    [obstacles removeObject: otherItem];
+    
+    for( NSUInteger n = 0; n < (gridWidth * gridHeight); n++ )
+        ((NSUInteger*)costGrid.mutableBytes)[n] = NSUIntegerMax -1; // -1 so we have the highest possible number, as we use NSUIntegerMax to indicate it's an obstacle.
+    
+    NSUInteger  destX = [self xAsInt: otherItem.pos.x gridWidth: gridWidth],
+                destY = [self yAsInt: otherItem.pos.y gridHeight: gridHeight];
+    NSUInteger  startX = [self xAsInt: self.pos.x gridWidth: gridWidth],
+                startY = [self yAsInt: self.pos.y gridHeight: gridHeight];
+
+    PATHFIND_DBGLOG( @"Determining cost: %lu,%lu / %lu,%lu -> %lu,%lu", gridWidth, gridHeight, startX, startY, destX, destY );
+    [self blockOffSurroundingsOfObstacles: obstacles inGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight];
+    #if PATHFIND_DBG
+    [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
+    #endif
+    
+    [self applyCostAwayToGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: destX y: destY fromItem: self distance: desiredDistance withObstacles: obstacles currentCost: 0];
     
     #if PATHFIND_DBG
     [self dumpCostGrid: (NSUInteger*)costGrid.bytes withWidth: gridWidth height: gridHeight];
