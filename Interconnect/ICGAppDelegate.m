@@ -74,7 +74,8 @@
                             "global.foo = \"This is boring...\\n\"\n"
                             "io.write( global.foo )\n"
                             "me.superiority = \"Complex.\\n\"\n"
-                            "io.write( me.superiority )\n";
+                            "io.write( me.superiority )\n"
+                            "me.balloonText = \"G'day, mate!\"\n";
         self.gameView.player = thePlayer;
         [self.gameView.items addObject: thePlayer];
         

@@ -856,9 +856,14 @@ static int ICGGameItemGetGlobal( lua_State *luaState )
     else
     {
         NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
-        NSString    *   value = self.owningView.variables[ key ];
         
-        lua_pushstring( luaState, [value UTF8String] );
+        if( [key isEqualToString: @"balloonText"] )
+            lua_pushstring( luaState, [self.balloonText UTF8String] );
+        else
+        {
+            NSString    *   value = self.owningView.variables[ key ];
+            lua_pushstring( luaState, [value UTF8String] );
+        }
     }
 
 	return 1;   // Number of results.
@@ -878,7 +883,10 @@ static int ICGGameItemSetVariable( lua_State *luaState )
     {
         NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
         NSString    *   value = [NSString stringWithUTF8String: lua_tostring( luaState, 3 )];
-        self.variables[ key ] = value;
+        if( [key isEqualToString: @"balloonText"] )
+            self.balloonText = value;
+        else
+            self.variables[ key ] = value;
     }
 
 	return 0;   // Number of results.
