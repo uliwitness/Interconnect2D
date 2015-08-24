@@ -69,6 +69,12 @@
         ICGGameTool*    tool = [ICGGameTool new];
         tool.wielder = thePlayer;
         thePlayer.talkTool = tool;
+        thePlayer.script = @"global.foo = \"Hello, I'm Kate!\\n\"\n"
+                            "io.write( global.foo )\n"
+                            "global.foo = \"This is boring...\\n\"\n"
+                            "io.write( global.foo )\n"
+                            "me.superiority = \"Complex.\\n\"\n"
+                            "io.write( me.superiority )\n";
         self.gameView.player = thePlayer;
         [self.gameView.items addObject: thePlayer];
         

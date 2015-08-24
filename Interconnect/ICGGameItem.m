@@ -141,6 +141,32 @@
         size_t      sz = strlen(str);
         int s = luaL_loadbuffer(luaState, str, sz, self.name.UTF8String);
 
+        // Set up our 'globals' table:
+        lua_newtable( luaState );   // Create object to hold globals.
+        lua_newtable( luaState );   // Create metatable of object to hold globals.
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemGetGlobal, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__index" ); // Put the Lua-wrapped C function in the global as "__index".
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemSetGlobal, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__newindex" ); // Put the Lua-wrapped C function in the global as "__newindex".
+        lua_setmetatable( luaState, -2 );   // Associate metatable with object holding globals.
+
+        lua_setglobal( luaState, "global" );    // Put the object holding globals into a Lua global named "global".
+
+        // Set up our 'me' table:
+        lua_newtable( luaState );   // Create object to hold me.
+        lua_newtable( luaState );   // Create metatable of object to hold me.
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemGetVariable, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__index" ); // Put the Lua-wrapped C function in the global as "__index".
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemSetVariable, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__newindex" ); // Put the Lua-wrapped C function in the global as "__newindex".
+        lua_setmetatable( luaState, -2 );   // Associate metatable with object holding me.
+
+        lua_setglobal( luaState, "me" );    // Put the object holding me into a Lua global named "me".
+
         if( s == 0 )
         {
             // Run it, with 0 params, (this creates the functions in their globals so we can call them)
@@ -155,6 +181,9 @@
             printf("Error: %s\n", lua_tostring(luaState, -1) );
             lua_pop(luaState, 1); // Remove error message from stack.
         }
+        
+        NSLog(@"global.variables = %@", self.owningView.variables);
+        NSLog(@"me.variables = %@", self.variables);
     }
 }
 
@@ -791,6 +820,89 @@
     [self addPointsForBestPathInCostGrid: (NSUInteger*)costGrid.mutableBytes withWidth: gridWidth height: gridHeight atX: outX y: outY toPath: path];
     
     return path;
+}
+
+
+static int ICGGameItemSetGlobal( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 3 )
+    {
+        lua_pushstring(luaState, "__newindex takes 3 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        NSString    *   value = [NSString stringWithUTF8String: lua_tostring( luaState, 3 )];
+        self.owningView.variables[ key ] = value;
+    }
+
+	return 0;   // Number of results.
+}
+
+static int ICGGameItemGetGlobal( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 2 )
+    {
+        lua_pushstring(luaState, "__index takes 2 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        NSString    *   value = self.owningView.variables[ key ];
+        
+        lua_pushstring( luaState, [value UTF8String] );
+    }
+
+	return 1;   // Number of results.
+}
+
+static int ICGGameItemSetVariable( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 3 )
+    {
+        lua_pushstring(luaState, "__newindex takes 3 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        NSString    *   value = [NSString stringWithUTF8String: lua_tostring( luaState, 3 )];
+        self.variables[ key ] = value;
+    }
+
+	return 0;   // Number of results.
+}
+
+static int ICGGameItemGetVariable( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 2 )
+    {
+        lua_pushstring(luaState, "__index takes 2 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        NSString    *   value = self.variables[ key ];
+        
+        lua_pushstring( luaState, [value UTF8String] );
+    }
+
+	return 1;   // Number of results.
 }
 
 @end
