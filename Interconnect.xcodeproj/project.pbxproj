@@ -42,6 +42,8 @@
 		557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEEB1B88A3F200470F05 /* ICGAnimation.m */; };
 		557DBEF81B8A780800470F05 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 557DBEF71B8A780800470F05 /* liblua.a */; };
 		557DBEFE1B8B9CDC00470F05 /* ICGLuaExposedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */; };
+		557DBF011B9104FF00470F05 /* ICGConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBF001B9104FF00470F05 /* ICGConversation.m */; };
+		557DBF041B911B6100470F05 /* ICGGameToolTalk.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBF031B911B6100470F05 /* ICGGameToolTalk.m */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +97,10 @@
 		557DBEF91B8A781900470F05 /* lua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lua.h; path = lua/src/lua.h; sourceTree = SOURCE_ROOT; };
 		557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGLuaExposedObject.h; sourceTree = "<group>"; };
 		557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGLuaExposedObject.m; sourceTree = "<group>"; };
+		557DBEFF1B9104FF00470F05 /* ICGConversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGConversation.h; sourceTree = "<group>"; };
+		557DBF001B9104FF00470F05 /* ICGConversation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGConversation.m; sourceTree = "<group>"; };
+		557DBF021B911B6100470F05 /* ICGGameToolTalk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameToolTalk.h; sourceTree = "<group>"; };
+		557DBF031B911B6100470F05 /* ICGGameToolTalk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameToolTalk.m; sourceTree = "<group>"; };
 		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -193,12 +199,16 @@
 				55A82B461B86A9FE00E21718 /* ICGGameView.m */,
 				557247221B87D83B00747C6A /* ICGGameTool.h */,
 				557247231B87D83B00747C6A /* ICGGameTool.m */,
+				557DBF021B911B6100470F05 /* ICGGameToolTalk.h */,
+				557DBF031B911B6100470F05 /* ICGGameToolTalk.m */,
 				557247251B87D8A300747C6A /* ICGGameItem.h */,
 				557247261B87D8A300747C6A /* ICGGameItem.m */,
 				557DBEE61B88877800470F05 /* ICGActor.h */,
 				557DBEE71B88877800470F05 /* ICGActor.m */,
 				557DBEEA1B88A3F200470F05 /* ICGAnimation.h */,
 				557DBEEB1B88A3F200470F05 /* ICGAnimation.m */,
+				557DBEFF1B9104FF00470F05 /* ICGConversation.h */,
+				557DBF001B9104FF00470F05 /* ICGConversation.m */,
 				557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */,
 				557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */,
 			);
@@ -346,8 +356,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				557DBF011B9104FF00470F05 /* ICGConversation.m in Sources */,
 				55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */,
 				55069C0A1B813CBC00CDD0DB /* main.m in Sources */,
+				557DBF041B911B6100470F05 /* ICGGameToolTalk.m in Sources */,
 				55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */,
 				557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */,
 				557DBEFE1B8B9CDC00470F05 /* ICGLuaExposedObject.m in Sources */,

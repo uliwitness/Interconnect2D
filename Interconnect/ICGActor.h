@@ -8,11 +8,17 @@
 
 #import "ICGGameItem.h"
 
+
+@class ICGConversation;
+
+
 @interface ICGActor : ICGGameItem <NSCoding>
 
 @property (strong) ICGAnimation  *   leftWalkAnimation;
 @property (strong) ICGAnimation  *   rightWalkAnimation;
 @property (strong) ICGAnimation  *   upWalkAnimation;
 @property (strong) ICGAnimation  *   downWalkAnimation;
+
+@property (strong) ICGConversation*  playerConversation;
 
 @end

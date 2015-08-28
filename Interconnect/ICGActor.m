@@ -21,6 +21,8 @@
         self.rightWalkAnimation = [aDecoder decodeObjectForKey: @"ICGRightWalkAnimation"];
         self.upWalkAnimation = [aDecoder decodeObjectForKey: @"ICGUpWalkAnimation"];
         self.downWalkAnimation = [aDecoder decodeObjectForKey: @"ICGDownWalkAnimation"];
+        
+        self.playerConversation = [aDecoder decodeObjectForKey: @"ICGPlayerConversation"];
     }
     
     return self;
@@ -35,6 +37,8 @@
     [aCoder encodeObject: self.rightWalkAnimation forKey: @"ICGRightWalkAnimation"];
     [aCoder encodeObject: self.upWalkAnimation forKey: @"ICGUpWalkAnimation"];
     [aCoder encodeObject: self.downWalkAnimation forKey: @"ICGDownWalkAnimation"];
+    
+    [aCoder encodeObject: self.playerConversation forKey: @"ICGPlayerConversation"];
 }
 
 

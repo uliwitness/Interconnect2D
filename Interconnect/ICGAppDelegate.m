@@ -12,6 +12,8 @@
 #import "ICGActor.h"
 #import "ICGGameTool.h"
 #import "ICGAnimation.h"
+#import "ICGConversation.h"
+#import "ICGGameToolTalk.h"
 
 
 @interface ICGAppDelegate ()
@@ -68,7 +70,10 @@
         thePlayer.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         ICGGameTool*    tool = [ICGGameTool new];
         tool.wielder = thePlayer;
-        thePlayer.talkTool = tool;
+        [thePlayer.tools addObject: tool];
+        thePlayer.tool = tool;
+        thePlayer.talkTool = [ICGGameToolTalk new];
+        thePlayer.talkTool.wielder = thePlayer;
         thePlayer.script = @"global.foo = \"Hello, I'm Kate!\\n\"\n"
                             "io.write( global.foo )\n"
                             "global.foo = \"This is boring...\\n\"\n"
@@ -79,7 +84,7 @@
         self.gameView.player = thePlayer;
         [self.gameView.items addObject: thePlayer];
         
-        ICGGameItem*    obstacle = [ICGGameItem new];
+        ICGActor*    obstacle = [ICGActor new];
         obstacle.name = @"ColorPanel";
         obstacle.owningView = self.gameView;
         obstacle.pos = NSMakePoint( 650, 190 );
@@ -87,15 +92,20 @@
         imgSize = obstacle.image.size;
         obstacle.defaultTool = self.gameView.player.talkTool;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
+        ICGConversation*        convo = [ICGConversation new];
+        id<ICGConversationNode> node = [convo conversationNode: @"hello" message: @"Welcome to the Interconnect!"];
+        [node addPlainChoice: @"Thanks!" message: @"Uh... thank you. What is this?"];
+        [node addPlainChoice: @"Eff You!" message: @"What is this?"];
+        obstacle.playerConversation = convo;
         [self.gameView.items addObject: obstacle];
 
-        obstacle = [ICGGameItem new];
+        obstacle = [ICGActor new];
         obstacle.name = @"Bonjour";
         obstacle.owningView = self.gameView;
         obstacle.pos = NSMakePoint( 550, 150 );
         obstacle.animation = [ICGAnimation animationNamed: NSImageNameBonjour];
         imgSize = obstacle.image.size;
-        obstacle.defaultTool = self.gameView.player.talkTool;
+        obstacle.defaultTool = self.gameView.player.tool;
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         [self.gameView.items addObject: obstacle];
         
