@@ -41,6 +41,7 @@
 		557DBEE81B88877800470F05 /* ICGActor.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEE71B88877800470F05 /* ICGActor.m */; };
 		557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEEB1B88A3F200470F05 /* ICGAnimation.m */; };
 		557DBEF81B8A780800470F05 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 557DBEF71B8A780800470F05 /* liblua.a */; };
+		557DBEFE1B8B9CDC00470F05 /* ICGLuaExposedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 /* End PBXBuildFile section */
 
@@ -92,6 +93,8 @@
 		557DBEEB1B88A3F200470F05 /* ICGAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGAnimation.m; sourceTree = "<group>"; };
 		557DBEF71B8A780800470F05 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = lua/src/liblua.a; sourceTree = SOURCE_ROOT; };
 		557DBEF91B8A781900470F05 /* lua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lua.h; path = lua/src/lua.h; sourceTree = SOURCE_ROOT; };
+		557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGLuaExposedObject.h; sourceTree = "<group>"; };
+		557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGLuaExposedObject.m; sourceTree = "<group>"; };
 		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -196,6 +199,8 @@
 				557DBEE71B88877800470F05 /* ICGActor.m */,
 				557DBEEA1B88A3F200470F05 /* ICGAnimation.h */,
 				557DBEEB1B88A3F200470F05 /* ICGAnimation.m */,
+				557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */,
+				557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -345,6 +350,7 @@
 				55069C0A1B813CBC00CDD0DB /* main.m in Sources */,
 				55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */,
 				557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */,
+				557DBEFE1B8B9CDC00470F05 /* ICGLuaExposedObject.m in Sources */,
 				557247271B87D8A300747C6A /* ICGGameItem.m in Sources */,
 				557247241B87D83B00747C6A /* ICGGameTool.m in Sources */,
 				557DBEE81B88877800470F05 /* ICGActor.m in Sources */,
