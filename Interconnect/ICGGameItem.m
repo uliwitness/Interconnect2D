@@ -124,20 +124,15 @@
 }
 
 
--(void) setScript:(NSString *)script
+-(void) compileScriptIfNeeded
 {
-    _script = script;
-    
-    if( luaState )
-        lua_close(luaState);	// Dispose of the script context.
-    
-    if( script )
+    if( self.script && self.owningView )
     {
         luaState = luaL_newstate();	// Create a context.
         luaL_openlibs(luaState);	// Load Lua standard library.
 
         // Load the file:
-        const char* str = script.UTF8String;
+        const char* str = self.script.UTF8String;
         size_t      sz = strlen(str);
         int s = luaL_loadbuffer(luaState, str, sz, self.name.UTF8String);
 
@@ -185,6 +180,25 @@
         NSLog(@"global.variables = %@", self.owningView.variables);
         NSLog(@"me.variables = %@", self.variables);
     }
+}
+
+
+-(void) setOwningView:(ICGGameView *)owningView
+{
+    _owningView = owningView;
+    
+    [self compileScriptIfNeeded];
+}
+
+
+-(void) setScript:(NSString *)script
+{
+    _script = script;
+    
+    if( luaState )
+        lua_close(luaState);	// Dispose of the script context.
+    
+    [self compileScriptIfNeeded];
 }
 
 
