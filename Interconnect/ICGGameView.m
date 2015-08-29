@@ -403,7 +403,8 @@
                 
             case ICGGameKeyCode_SecondaryInteract:
             case ICGGameKeyCode_TertiaryInteract:
-                NSBeep();   // Never support these, so users can't accidentally end a conversation that pops up while they are playing.
+                if( !keyEvt.isRepeat )
+                    NSBeep();   // Never support these, so users can't accidentally end a conversation that pops up while they are playing.
                 break;
             
             case ICGGameKeyCode_SwitchTool:
@@ -515,7 +516,8 @@
                 break;
             
             default:
-                NSBeep();
+                if( !keyEvt.isRepeat )  // Don't keep beeping.
+                    NSBeep();
                 break;
         }
     }
