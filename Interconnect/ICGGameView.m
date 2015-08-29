@@ -300,12 +300,58 @@
         
         for( ; currNodeIdx < numNodes; currNodeIdx++ )
         {
-            if( NSPointInRect(hitPos, conversationNodes[currNodeIdx]) )
+            NSRect      trackingRect = NSInsetRect(conversationNodes[currNodeIdx],-4,-4);
+            if( NSPointInRect(hitPos, trackingRect) )
             {
-                ICGConversationChoice*  currChoice = currNode.choices[currNodeIdx -2];
-                id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
-                NSLog(@"Picked %@", currChoice);
-                [self setCurrentConversationNode: nextNode];
+                selectedChoice = currNodeIdx -2;
+                [self setNeedsDisplay: YES];
+                [self display];
+                
+                BOOL        keepTracking = YES;
+                while( keepTracking )
+                {
+                    @autoreleasepool
+                    {
+                        NSEvent*    currEvent = [[NSApplication sharedApplication] nextEventMatchingMask: NSLeftMouseDraggedMask | NSLeftMouseUpMask | NSRightMouseUpMask | NSOtherMouseUpMask untilDate: [NSDate distantFuture] inMode: NSEventTrackingRunLoopMode dequeue: YES];
+                        if( currEvent )
+                        {
+                            switch( currEvent.type )
+                            {
+                              case NSLeftMouseUp:
+                              case NSRightMouseUp:
+                              case NSOtherMouseUp:
+                                keepTracking = NO;
+                                break;
+
+                              default:
+                              {
+                                hitPos = [self convertPoint: currEvent.locationInWindow fromView: nil];
+                                if( selectedChoice != (currNodeIdx -2) && NSPointInRect(hitPos, trackingRect) )
+                                {
+                                    selectedChoice = currNodeIdx -2;
+                                    [self setNeedsDisplay: YES];
+                                }
+                                else if( selectedChoice != NSUIntegerMax && !NSPointInRect(hitPos, trackingRect) )
+                                {
+                                    selectedChoice = NSUIntegerMax;
+                                    [self setNeedsDisplay: YES];
+                                }
+                                break;
+                              }
+                            }
+                        }
+                    }
+                }
+                
+                if( selectedChoice != NSUIntegerMax )
+                {
+                    ICGConversationChoice*  currChoice = currNode.choices[currNodeIdx -2];
+                    id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
+                    NSLog(@"Picked %@", currChoice);
+                    self.player.balloonText = currChoice.choiceMessage;
+                    [self.player performSelector: @selector(setBalloonText:) withObject: nil afterDelay: 2.0];
+                    [self setCurrentConversationNode: nextNode];
+                }
                 break;
             }
         }
