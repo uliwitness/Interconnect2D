@@ -95,7 +95,10 @@
         ICGConversation*        convo = [ICGConversation new];
         id<ICGConversationNode> node = [convo conversationNode: @"hello" message: @"Welcome to the Interconnect!"];
         [node addPlainChoice: @"Thanks!" message: @"Uh... thank you. What is this?"];
-        [node addPlainChoice: @"Eff You!" message: @"What is this?"];
+        ICGConversationChoice*  cc = [node addPlainChoice: @"Eff You!" message: @"&^%#%@$@!!!!"];
+        id<ICGConversationNode> node2 = [convo conversationNode: @"eff you" message: @"Don't you find that a bit rude?"];
+        [node2 addPlainChoice: @"You're right." message: @"I'm sorry, you really don't deserve this."];
+        cc.nextConversationNode = node2;
         obstacle.playerConversation = convo;
         [self.gameView.items addObject: obstacle];
 

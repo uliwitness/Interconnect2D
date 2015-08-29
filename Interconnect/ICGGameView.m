@@ -49,7 +49,8 @@
 
 @interface ICGGameView ()
 {
-    NSUInteger  selectedChoice;
+    NSUInteger  _selectedChoice;
+    BOOL        _conversationChosen;
 }
 
 @property (retain,nonatomic) NSMutableArray*        pressedKeys;
@@ -158,20 +159,25 @@
         [[NSColor colorWithCalibratedWhite: 0.0 alpha: 0.4] set];
         [NSBezierPath fillRect: conversationNodes[currNodeIdx++]];
         
-        NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
-        NSDictionary*   selAttrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.selectedTextColor, NSBackgroundColorAttributeName: NSColor.selectedTextBackgroundColor };
-        
-        [currNode.nodeMessage drawInRect: conversationNodes[currNodeIdx++] withAttributes: attrs];
-        
-        for( ; currNodeIdx < numNodes; currNodeIdx++ )
+        if( !_conversationChosen )  // We're not switching between convos?
         {
-            BOOL    isSelected = (currNodeIdx-2) == selectedChoice;
-            if( isSelected )
+            NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
+            NSDictionary*   selAttrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.selectedTextColor, NSBackgroundColorAttributeName: NSColor.selectedTextBackgroundColor };
+            
+            [currNode.nodeMessage drawInRect: conversationNodes[currNodeIdx++] withAttributes: attrs];
+            
+            for( ; currNodeIdx < numNodes; currNodeIdx++ )
             {
-                [NSColor.selectedTextBackgroundColor set];
-                [[NSBezierPath bezierPathWithRoundedRect: NSInsetRect(conversationNodes[currNodeIdx],-4,-4) xRadius: 4 yRadius: 4] fill];
+                BOOL    isSelected = (currNodeIdx-2) == _selectedChoice;
+                if( isSelected )
+                {
+                    [NSColor.selectedTextBackgroundColor set];
+                    [[NSBezierPath bezierPathWithRoundedRect: NSInsetRect(conversationNodes[currNodeIdx],-4,-4) xRadius: 4 yRadius: 4] fill];
+                }
+                NSString    *   str = [self.currentConversationNode.choices[currNodeIdx-2] choiceName];
+                str = [NSString stringWithFormat: @"• %@",str];
+                [str drawInRect: conversationNodes[currNodeIdx] withAttributes: (isSelected ? selAttrs : attrs)];
             }
-            [[self.currentConversationNode.choices[currNodeIdx-2] choiceName] drawInRect: conversationNodes[currNodeIdx] withAttributes: (isSelected ? selAttrs : attrs)];
         }
     }
 }
@@ -189,7 +195,6 @@
         self.conversationNodeRectArrayStorage = [[NSMutableData alloc] initWithLength: sizeof(NSRect) * (currNode.choices.count +2)];
         NSRect*     conversationNodes = (NSRect*) self.conversationNodeRectArrayStorage.mutableBytes;
         
-        // Measure first:
         NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
         NSSize                  measureSize = NSInsetRect(self.bounds,8,8).size;
         CGFloat                 messageHeight = [currNode.nodeMessage boundingRectWithSize: measureSize options: 0 attributes: attrs].size.height;
@@ -201,7 +206,6 @@
             totalHeight += [currChoice.choiceName boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height + 8;
         }
         
-        // Now draw:
         NSRect      msgBox = NSInsetRect(self.bounds,8,8);
         msgBox.size.height = totalHeight;
         conversationNodes[currIdx++] = NSInsetRect(msgBox,-8,-8);
@@ -212,7 +216,8 @@
         
         for( ICGConversationChoice* currChoice in currNode.choices )
         {
-            CGFloat     currHeight = [currChoice.choiceName boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height;
+            NSString    *   str = [NSString stringWithFormat: @"• %@", currChoice.choiceName];
+            CGFloat         currHeight = [str boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height;
             msgBox.origin.y -= currHeight +8;
             msgBox.size.height = currHeight;
             conversationNodes[currIdx++] = msgBox;
@@ -230,8 +235,9 @@
 
 -(void) setCurrentConversationNode:(id<ICGConversationNode>)currentConversationNode
 {
+    _conversationChosen = NO;
     _currentConversationNode = currentConversationNode;
-    selectedChoice = NSUIntegerMax; // Nothing selected.
+    _selectedChoice = NSUIntegerMax; // Nothing selected.
     [self layoutConversationNodeUI];
     [self setNeedsDisplay: YES];
 }
@@ -303,7 +309,7 @@
             NSRect      trackingRect = NSInsetRect(conversationNodes[currNodeIdx],-4,-4);
             if( NSPointInRect(hitPos, trackingRect) )
             {
-                selectedChoice = currNodeIdx -2;
+                _selectedChoice = currNodeIdx -2;
                 [self setNeedsDisplay: YES];
                 [self display];
                 
@@ -326,14 +332,14 @@
                               default:
                               {
                                 hitPos = [self convertPoint: currEvent.locationInWindow fromView: nil];
-                                if( selectedChoice != (currNodeIdx -2) && NSPointInRect(hitPos, trackingRect) )
+                                if( _selectedChoice != (currNodeIdx -2) && NSPointInRect(hitPos, trackingRect) )
                                 {
-                                    selectedChoice = currNodeIdx -2;
+                                    _selectedChoice = currNodeIdx -2;
                                     [self setNeedsDisplay: YES];
                                 }
-                                else if( selectedChoice != NSUIntegerMax && !NSPointInRect(hitPos, trackingRect) )
+                                else if( _selectedChoice != NSUIntegerMax && !NSPointInRect(hitPos, trackingRect) )
                                 {
-                                    selectedChoice = NSUIntegerMax;
+                                    _selectedChoice = NSUIntegerMax;
                                     [self setNeedsDisplay: YES];
                                 }
                                 break;
@@ -343,19 +349,31 @@
                     }
                 }
                 
-                if( selectedChoice != NSUIntegerMax )
+                if( _selectedChoice != NSUIntegerMax )
                 {
-                    ICGConversationChoice*  currChoice = currNode.choices[currNodeIdx -2];
-                    id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
-                    NSLog(@"Picked %@", currChoice);
-                    self.player.balloonText = currChoice.choiceMessage;
-                    [self.player performSelector: @selector(setBalloonText:) withObject: nil afterDelay: 2.0];
-                    [self setCurrentConversationNode: nextNode];
+                    [self triggerConversationChoice: currNode.choices[_selectedChoice] ];
                 }
                 break;
             }
         }
     }
+}
+
+
+-(void) triggerConversationChoice: (ICGConversationChoice*)currChoice
+{
+    self.player.balloonText = currChoice.choiceMessage;
+    _conversationChosen = YES;
+    [self setNeedsDisplay: YES];
+    [self performSelector: @selector(goNextFromConversationChoice:) withObject: currChoice afterDelay: 2.0];
+}
+
+
+-(void) goNextFromConversationChoice: (ICGConversationChoice*)currChoice
+{
+    self.player.balloonText = nil;
+    id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
+    [self setCurrentConversationNode: nextNode];
 }
 
 
@@ -475,11 +493,11 @@
             case ICGGameKeyCode_SecondaryUpArrow:
                 if( !keyEvt.isRepeat )
                 {
-                    selectedChoice--;
+                    _selectedChoice--;
                     id<ICGConversationNode> currNode = self.currentConversationNode;
-                    if( selectedChoice > currNode.choices.count )
+                    if( _selectedChoice > currNode.choices.count )
                     {
-                        selectedChoice = NSUIntegerMax;    // Make sure pressing "down" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 ups.
+                        _selectedChoice = NSUIntegerMax;    // Make sure pressing "down" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 ups.
                     }
                     
                     [self setNeedsDisplay: YES];
@@ -489,11 +507,11 @@
             case ICGGameKeyCode_SecondaryDownArrow:
                 if( !keyEvt.isRepeat )
                 {
-                    selectedChoice++;
+                    _selectedChoice++;
                     id<ICGConversationNode> currNode = self.currentConversationNode;
-                    if( selectedChoice > currNode.choices.count && selectedChoice != NSUIntegerMax )
+                    if( _selectedChoice > currNode.choices.count && _selectedChoice != NSUIntegerMax )
                     {
-                        selectedChoice = currNode.choices.count;    // Make sure pressing "up" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 downs.
+                        _selectedChoice = currNode.choices.count;    // Make sure pressing "up" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 downs.
                     }
                     else
                         [self setNeedsDisplay: YES];
@@ -505,12 +523,9 @@
                 if( !keyEvt.isRepeat )
                 {
                     id<ICGConversationNode> currNode = self.currentConversationNode;
-                    if( selectedChoice < currNode.choices.count )
+                    if( _selectedChoice < currNode.choices.count )
                     {
-                        ICGConversationChoice*  currChoice = currNode.choices[selectedChoice];
-                        id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
-                        NSLog(@"Picked %@", currChoice);
-                        [self setCurrentConversationNode: nextNode];
+                        [self triggerConversationChoice: currNode.choices[_selectedChoice] ];
                     }
                 }
                 break;
