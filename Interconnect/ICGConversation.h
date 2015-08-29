@@ -14,7 +14,8 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
     ICGConversationChoiceType_Plain,          // Nothing special, just a thing the player can say.
     ICGConversationChoiceType_MissionInfo,    // Show info about a mission, where you can accept it.
     ICGConversationChoiceType_MissionAccept,  // Actually accept a mission.
-    ICGConversationChoiceType_MissionTurnIn   // Turn in a mission (i.e. end it and get rewards).
+    ICGConversationChoiceType_MissionTurnIn,  // Turn in a mission (i.e. end it and get rewards).
+    ICGConversationChoiceType_INVALID         // Used for "number of choice types" internally. Must be last.
 };
 
 

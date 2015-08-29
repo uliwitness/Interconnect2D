@@ -18,6 +18,15 @@
 @end
 
 
+NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
+{
+    @"Plain",
+    @"MissionInfo",
+    @"MissionAccept",
+    @"MissionTurnIn"
+};
+
+
 @implementation ICGConversationChoice
 
 +(instancetype)   plainChoice: (NSString*)inName message: (NSString*)inMessage
@@ -70,6 +79,12 @@
     [aCoder encodeObject: self.choiceMessage forKey: @"ICGMessage"];
     [aCoder encodeInt32: self.conversationChoiceType forKey: @"ICGType"];
     [aCoder encodeObject: self.nextConversationNode forKey: @"ICGNextNode"];
+}
+
+
+-(NSString*)    description
+{
+    return [NSString stringWithFormat: @"%@ <%p> { name = \"%@\", msg = \"%@\", type = %@, next = %@ <%p> \"%@\" }", self.className, self, self.choiceName, self.choiceMessage, sChoiceTypeNames[self.conversationChoiceType], ((NSObject*)self.nextConversationNode).className, self.nextConversationNode, self.nextConversationNode.nodeIdentifier];
 }
 
 @end
@@ -155,6 +170,12 @@
     return newChoice;
 }
 
+
+-(NSString*)    description
+{
+    return [NSString stringWithFormat: @"%@ <%p> { id = \"%@\", msg = \"%@\",\nchoices = %@ }", self.className, self, self.nodeIdentifier, self.nodeMessage, self.choices];
+}
+
 @end
 
 
@@ -230,6 +251,12 @@
     if( !self.firstNode )
         self.firstNode = newNode;
     return newNode;
+}
+
+
+-(NSString*)    description
+{
+    return [NSString stringWithFormat: @"%@ <%p> { first = %@ }", self.className, self, self.firstNode];
 }
 
 @end

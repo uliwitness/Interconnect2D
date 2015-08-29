@@ -19,7 +19,6 @@
 {
     //NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
     
-    otherItem.owningView.currentConversationNode = [(ICGActor*)otherItem playerConversation].firstNode;
     otherItem.owningView.currentConversation = [(ICGActor*)otherItem playerConversation];
     [otherItem performSelector: @selector(setBalloonText:) withObject: nil afterDelay: 2.0];
     

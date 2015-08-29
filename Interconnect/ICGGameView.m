@@ -53,6 +53,7 @@
 @property (retain,nonatomic) NSTimer*               keyRepeatTimer;
 @property (assign,nonatomic) NSUInteger             moveIndex;
 @property (retain,nonatomic) NSTimer*               moveTimer;
+@property (retain,nonatomic) NSMutableData*         conversationNodeRectArrayStorage;
 
 @end
 
@@ -144,14 +145,46 @@
         return YES;
     }];
     
-    if( self.currentConversationNode )
+    if( self.conversationNodeRectArrayStorage )
     {
+        id<ICGConversationNode> currNode = self.currentConversationNode;
+        NSRect*     conversationNodes = (NSRect*) self.conversationNodeRectArrayStorage.mutableBytes;
+        NSUInteger  numNodes = (currNode.choices.count +2);
+        NSUInteger  currNodeIdx = 0;
+        
+        [[NSColor colorWithCalibratedWhite: 0.0 alpha: 0.4] set];
+        [NSBezierPath fillRect: conversationNodes[currNodeIdx++]];
+        
+        NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
+        
+        [currNode.nodeMessage drawInRect: conversationNodes[currNodeIdx++] withAttributes: attrs];
+        
+        for( ; currNodeIdx < numNodes; currNodeIdx++ )
+        {
+            [[self.currentConversationNode.choices[currNodeIdx-2] choiceName] drawInRect: conversationNodes[currNodeIdx] withAttributes: attrs];
+        }
+    }
+}
+
+
+-(void) layoutConversationNodeUI
+{
+    id<ICGConversationNode> currNode = self.currentConversationNode;
+    if( currNode == nil )
+    {
+        self.conversationNodeRectArrayStorage = nil;
+    }
+    else
+    {
+        self.conversationNodeRectArrayStorage = [[NSMutableData alloc] initWithLength: sizeof(NSRect) * (currNode.choices.count +2)];
+        NSRect*     conversationNodes = (NSRect*) self.conversationNodeRectArrayStorage.mutableBytes;
+        
         // Measure first:
         NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
-        id<ICGConversationNode> currNode = self.currentConversationNode;
         NSSize                  measureSize = NSInsetRect(self.bounds,8,8).size;
         CGFloat                 messageHeight = [currNode.nodeMessage boundingRectWithSize: measureSize options: 0 attributes: attrs].size.height;
         CGFloat                 totalHeight = messageHeight;
+        NSUInteger              currIdx = 0;
         
         for( ICGConversationChoice* currChoice in currNode.choices )
         {
@@ -161,19 +194,18 @@
         // Now draw:
         NSRect      msgBox = NSInsetRect(self.bounds,8,8);
         msgBox.size.height = totalHeight;
-        [NSColor colorWithCalibratedWhite: 0.0 alpha: 0.4];
-        [NSBezierPath fillRect: NSInsetRect(msgBox,-8,-8)];
+        conversationNodes[currIdx++] = NSInsetRect(msgBox,-8,-8);
         
         msgBox.origin.y = NSMaxY(msgBox) -messageHeight;
         msgBox.size.height = messageHeight;
-        [currNode.nodeMessage drawInRect: msgBox withAttributes: attrs];
+        conversationNodes[currIdx++] = msgBox;
         
         for( ICGConversationChoice* currChoice in currNode.choices )
         {
             CGFloat     currHeight = [currChoice.choiceName boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height;
             msgBox.origin.y -= currHeight +8;
             msgBox.size.height = currHeight;
-            [currChoice.choiceName drawInRect: msgBox withAttributes: attrs];
+            conversationNodes[currIdx++] = msgBox;
         }
     }
 }
@@ -182,13 +214,14 @@
 -(void) setCurrentConversation:(ICGConversation *)currentConversation
 {
     _currentConversation = currentConversation;
-    [self setNeedsDisplay: YES];
+    [self setCurrentConversationNode: currentConversation.firstNode];
 }
 
 
 -(void) setCurrentConversationNode:(id<ICGConversationNode>)currentConversationNode
 {
     _currentConversationNode = currentConversationNode;
+    [self layoutConversationNodeUI];
     [self setNeedsDisplay: YES];
 }
 
@@ -247,9 +280,24 @@
             return YES;
         }];
     }
-    else
+    else if( self.conversationNodeRectArrayStorage )
     {
+        id<ICGConversationNode> currNode = self.currentConversationNode;
+        NSRect*     conversationNodes = (NSRect*) self.conversationNodeRectArrayStorage.mutableBytes;
+        NSUInteger  numNodes = (currNode.choices.count +2);
+        NSUInteger  currNodeIdx = 2;
         
+        for( ; currNodeIdx < numNodes; currNodeIdx++ )
+        {
+            if( NSPointInRect(hitPos, conversationNodes[currNodeIdx]) )
+            {
+                ICGConversationChoice*  currChoice = currNode.choices[currNodeIdx -2];
+                id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
+                NSLog(@"Picked %@", currChoice);
+                [self setCurrentConversationNode: nextNode];
+                break;
+            }
+        }
     }
 }
 
