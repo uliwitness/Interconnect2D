@@ -23,7 +23,9 @@ typedef NS_ENUM(NSUInteger, ICGGameKeyCode)
     ICGGameKeyCode_RightArrow = NSRightArrowFunctionKey,
     ICGGameKeyCode_UpArrow = NSUpArrowFunctionKey,
     ICGGameKeyCode_DownArrow = NSDownArrowFunctionKey,
-    ICGGameKeyCode_Interact = 'e',
+    ICGGameKeyCode_Interact = 'e',                          // 'Interact' key while playing.
+    ICGGameKeyCode_SecondaryInteract = ' ',                 // 'Interact' key in conversations and other things we don't wanna accidentally trigger if they pop up during gameplay and we just pressed 'e' for sth. else.
+    ICGGameKeyCode_TertiaryInteract = '\r',                 // 'Interact' key in conversations and other things we don't wanna accidentally trigger if they pop up during gameplay and we just pressed 'e' for sth. else.
     ICGGameKeyCode_SecondaryLeftArrow = 'a',
     ICGGameKeyCode_SecondaryRightArrow = 'd',
     ICGGameKeyCode_SecondaryUpArrow = 'w',

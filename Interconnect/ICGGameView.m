@@ -48,6 +48,9 @@
 
 
 @interface ICGGameView ()
+{
+    NSUInteger  selectedChoice;
+}
 
 @property (retain,nonatomic) NSMutableArray*        pressedKeys;
 @property (retain,nonatomic) NSTimer*               keyRepeatTimer;
@@ -156,12 +159,19 @@
         [NSBezierPath fillRect: conversationNodes[currNodeIdx++]];
         
         NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
+        NSDictionary*   selAttrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.selectedTextColor, NSBackgroundColorAttributeName: NSColor.selectedTextBackgroundColor };
         
         [currNode.nodeMessage drawInRect: conversationNodes[currNodeIdx++] withAttributes: attrs];
         
         for( ; currNodeIdx < numNodes; currNodeIdx++ )
         {
-            [[self.currentConversationNode.choices[currNodeIdx-2] choiceName] drawInRect: conversationNodes[currNodeIdx] withAttributes: attrs];
+            BOOL    isSelected = (currNodeIdx-2) == selectedChoice;
+            if( isSelected )
+            {
+                [NSColor.selectedTextBackgroundColor set];
+                [[NSBezierPath bezierPathWithRoundedRect: NSInsetRect(conversationNodes[currNodeIdx],-4,-4) xRadius: 4 yRadius: 4] fill];
+            }
+            [[self.currentConversationNode.choices[currNodeIdx-2] choiceName] drawInRect: conversationNodes[currNodeIdx] withAttributes: (isSelected ? selAttrs : attrs)];
         }
     }
 }
@@ -221,6 +231,7 @@
 -(void) setCurrentConversationNode:(id<ICGConversationNode>)currentConversationNode
 {
     _currentConversationNode = currentConversationNode;
+    selectedChoice = NSUIntegerMax; // Nothing selected.
     [self layoutConversationNodeUI];
     [self setNeedsDisplay: YES];
 }
@@ -343,6 +354,11 @@
                 if( !keyEvt.isRepeat )
                     [self interactWithTool: nil];
                 break;
+                
+            case ICGGameKeyCode_SecondaryInteract:
+            case ICGGameKeyCode_TertiaryInteract:
+                NSBeep();   // Never support these, so users can't accidentally end a conversation that pops up while they are playing.
+                break;
             
             case ICGGameKeyCode_SwitchTool:
                 if( !keyEvt.isRepeat )
@@ -406,7 +422,56 @@
     }
     else
     {
-    
+        switch( keyEvt.keyCode )
+        {
+            case ICGGameKeyCode_UpArrow:
+            case ICGGameKeyCode_SecondaryUpArrow:
+                if( !keyEvt.isRepeat )
+                {
+                    selectedChoice--;
+                    id<ICGConversationNode> currNode = self.currentConversationNode;
+                    if( selectedChoice > currNode.choices.count )
+                    {
+                        selectedChoice = NSUIntegerMax;    // Make sure pressing "down" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 ups.
+                    }
+                    
+                    [self setNeedsDisplay: YES];
+                }
+                break;
+            case ICGGameKeyCode_DownArrow:
+            case ICGGameKeyCode_SecondaryDownArrow:
+                if( !keyEvt.isRepeat )
+                {
+                    selectedChoice++;
+                    id<ICGConversationNode> currNode = self.currentConversationNode;
+                    if( selectedChoice > currNode.choices.count && selectedChoice != NSUIntegerMax )
+                    {
+                        selectedChoice = currNode.choices.count;    // Make sure pressing "up" immediately shows selection again and user doesn't have to press 3 times to get it back after 3 downs.
+                    }
+                    else
+                        [self setNeedsDisplay: YES];
+                }
+                break;
+            
+            case ICGGameKeyCode_SecondaryInteract:
+            case ICGGameKeyCode_TertiaryInteract:
+                if( !keyEvt.isRepeat )
+                {
+                    id<ICGConversationNode> currNode = self.currentConversationNode;
+                    if( selectedChoice < currNode.choices.count )
+                    {
+                        ICGConversationChoice*  currChoice = currNode.choices[selectedChoice];
+                        id<ICGConversationNode> nextNode = [currChoice nextConversationNode];
+                        NSLog(@"Picked %@", currChoice);
+                        [self setCurrentConversationNode: nextNode];
+                    }
+                }
+                break;
+            
+            default:
+                NSBeep();
+                break;
+        }
     }
 }
 
