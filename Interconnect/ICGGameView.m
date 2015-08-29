@@ -10,6 +10,7 @@
 #import "ICGGameTool.h"
 #import "ICGGameItem.h"
 #import "ICGActor.h"
+#import "ICGConversation.h"
 
 
 // The bigger this number, the more subtle the perspective effect:
@@ -142,6 +143,53 @@
         
         return YES;
     }];
+    
+    if( self.currentConversationNode )
+    {
+        // Measure first:
+        NSDictionary*   attrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont systemFontSize]], NSForegroundColorAttributeName: NSColor.whiteColor };
+        id<ICGConversationNode> currNode = self.currentConversationNode;
+        NSSize                  measureSize = NSInsetRect(self.bounds,8,8).size;
+        CGFloat                 messageHeight = [currNode.nodeMessage boundingRectWithSize: measureSize options: 0 attributes: attrs].size.height;
+        CGFloat                 totalHeight = messageHeight;
+        
+        for( ICGConversationChoice* currChoice in currNode.choices )
+        {
+            totalHeight += [currChoice.choiceName boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height + 8;
+        }
+        
+        // Now draw:
+        NSRect      msgBox = NSInsetRect(self.bounds,8,8);
+        msgBox.size.height = totalHeight;
+        [NSColor colorWithCalibratedWhite: 0.0 alpha: 0.4];
+        [NSBezierPath fillRect: NSInsetRect(msgBox,-8,-8)];
+        
+        msgBox.origin.y = NSMaxY(msgBox) -messageHeight;
+        msgBox.size.height = messageHeight;
+        [currNode.nodeMessage drawInRect: msgBox withAttributes: attrs];
+        
+        for( ICGConversationChoice* currChoice in currNode.choices )
+        {
+            CGFloat     currHeight = [currChoice.choiceName boundingRectWithSize: self.bounds.size options: 0 attributes: attrs].size.height;
+            msgBox.origin.y -= currHeight +8;
+            msgBox.size.height = currHeight;
+            [currChoice.choiceName drawInRect: msgBox withAttributes: attrs];
+        }
+    }
+}
+
+
+-(void) setCurrentConversation:(ICGConversation *)currentConversation
+{
+    _currentConversation = currentConversation;
+    [self setNeedsDisplay: YES];
+}
+
+
+-(void) setCurrentConversationNode:(id<ICGConversationNode>)currentConversationNode
+{
+    _currentConversationNode = currentConversationNode;
+    [self setNeedsDisplay: YES];
 }
 
 
@@ -184,18 +232,25 @@
 - (void)mouseDown:(NSEvent *)theEvent
 {
     NSPoint     hitPos = [self convertPoint: theEvent.locationInWindow fromView: nil];
-    [self doBackwards: NO forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
+    if( self.currentConversationNode == nil )
     {
-        if( NSPointInRect( hitPos, imgBox ) )
+        [self doBackwards: NO forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
         {
-            NSPoint     convertedHitPos = { (hitPos.x -imgBox.origin.x) / (currItem.image.size.width / imgBox.size.width),
-                                            (hitPos.y -imgBox.origin.y) / (currItem.image.size.height / imgBox.size.height)};
-            if( [currItem mouseDownAtPoint: convertedHitPos modifiers: theEvent.modifierFlags] )  // Was hit! We're done looping!
-                return NO;
-        }
+            if( NSPointInRect( hitPos, imgBox ) )
+            {
+                NSPoint     convertedHitPos = { (hitPos.x -imgBox.origin.x) / (currItem.image.size.width / imgBox.size.width),
+                                                (hitPos.y -imgBox.origin.y) / (currItem.image.size.height / imgBox.size.height)};
+                if( [currItem mouseDownAtPoint: convertedHitPos modifiers: theEvent.modifierFlags] )  // Was hit! We're done looping!
+                    return NO;
+            }
+            
+            return YES;
+        }];
+    }
+    else
+    {
         
-        return YES;
-    }];
+    }
 }
 
 
@@ -215,88 +270,95 @@
 {
     //NSLog(@"Key %ld pressed%s.", keyEvt.keyCode, keyEvt.isRepeat?" again":"");
     
-    switch( keyEvt.keyCode )
+    if( self.currentConversationNode == nil )
     {
-        case ICGGameKeyCode_LeftArrow:
-        case ICGGameKeyCode_SecondaryLeftArrow:
-            [self moveLeft];
-            break;
-        case ICGGameKeyCode_RightArrow:
-        case ICGGameKeyCode_SecondaryRightArrow:
-            [self moveRight];
-            break;
-        case ICGGameKeyCode_UpArrow:
-        case ICGGameKeyCode_SecondaryUpArrow:
-            [self moveUp];
-            break;
-        case ICGGameKeyCode_DownArrow:
-        case ICGGameKeyCode_SecondaryDownArrow:
-            [self moveDown];
-            break;
-        
-        case ICGGameKeyCode_Interact:
-            if( !keyEvt.isRepeat )
-                [self interactWithTool: nil];
-            break;
-        
-        case ICGGameKeyCode_SwitchTool:
-            if( !keyEvt.isRepeat )
-                [self switchTool];
-            break;
+        switch( keyEvt.keyCode )
+        {
+            case ICGGameKeyCode_LeftArrow:
+            case ICGGameKeyCode_SecondaryLeftArrow:
+                [self moveLeft];
+                break;
+            case ICGGameKeyCode_RightArrow:
+            case ICGGameKeyCode_SecondaryRightArrow:
+                [self moveRight];
+                break;
+            case ICGGameKeyCode_UpArrow:
+            case ICGGameKeyCode_SecondaryUpArrow:
+                [self moveUp];
+                break;
+            case ICGGameKeyCode_DownArrow:
+            case ICGGameKeyCode_SecondaryDownArrow:
+                [self moveDown];
+                break;
             
-        case ICGGameKeyCode_Talk:
-            if( !keyEvt.isRepeat && self.player.talkTool != nil )
-                [self interactWithTool: self.player.talkTool];
-            break;
-        case ICGGameKeyCode_Tool1:
-            if( !keyEvt.isRepeat && self.player.tools.count > 0 )
-                [self interactWithTool: self.player.tools[0]];
-            break;
+            case ICGGameKeyCode_Interact:
+                if( !keyEvt.isRepeat )
+                    [self interactWithTool: nil];
+                break;
+            
+            case ICGGameKeyCode_SwitchTool:
+                if( !keyEvt.isRepeat )
+                    [self switchTool];
+                break;
+                
+            case ICGGameKeyCode_Talk:
+                if( !keyEvt.isRepeat && self.player.talkTool != nil )
+                    [self interactWithTool: self.player.talkTool];
+                break;
+            case ICGGameKeyCode_Tool1:
+                if( !keyEvt.isRepeat && self.player.tools.count > 0 )
+                    [self interactWithTool: self.player.tools[0]];
+                break;
 
-        case ICGGameKeyCode_Tool2:
-            if( !keyEvt.isRepeat && self.player.tools.count > 1 )
-                [self interactWithTool: self.player.tools[1]];
-            break;
+            case ICGGameKeyCode_Tool2:
+                if( !keyEvt.isRepeat && self.player.tools.count > 1 )
+                    [self interactWithTool: self.player.tools[1]];
+                break;
 
-        case ICGGameKeyCode_Tool3:
-            if( !keyEvt.isRepeat && self.player.tools.count > 2 )
-                [self interactWithTool: self.player.tools[2]];
-            break;
+            case ICGGameKeyCode_Tool3:
+                if( !keyEvt.isRepeat && self.player.tools.count > 2 )
+                    [self interactWithTool: self.player.tools[2]];
+                break;
 
-        case ICGGameKeyCode_Tool4:
-            if( !keyEvt.isRepeat && self.player.tools.count > 3 )
-                [self interactWithTool: self.player.tools[3]];
-            break;
+            case ICGGameKeyCode_Tool4:
+                if( !keyEvt.isRepeat && self.player.tools.count > 3 )
+                    [self interactWithTool: self.player.tools[3]];
+                break;
 
-        case ICGGameKeyCode_Tool5:
-            if( !keyEvt.isRepeat && self.player.tools.count > 4 )
-                [self interactWithTool: self.player.tools[4]];
-            break;
+            case ICGGameKeyCode_Tool5:
+                if( !keyEvt.isRepeat && self.player.tools.count > 4 )
+                    [self interactWithTool: self.player.tools[4]];
+                break;
 
-        case ICGGameKeyCode_Tool6:
-            if( !keyEvt.isRepeat && self.player.tools.count > 5 )
-                [self interactWithTool: self.player.tools[5]];
-            break;
+            case ICGGameKeyCode_Tool6:
+                if( !keyEvt.isRepeat && self.player.tools.count > 5 )
+                    [self interactWithTool: self.player.tools[5]];
+                break;
 
-        case ICGGameKeyCode_Tool7:
-            if( !keyEvt.isRepeat && self.player.tools.count > 6 )
-                [self interactWithTool: self.player.tools[6]];
-            break;
+            case ICGGameKeyCode_Tool7:
+                if( !keyEvt.isRepeat && self.player.tools.count > 6 )
+                    [self interactWithTool: self.player.tools[6]];
+                break;
 
-        case ICGGameKeyCode_Tool8:
-            if( !keyEvt.isRepeat && self.player.tools.count > 7 )
-                [self interactWithTool: self.player.tools[7]];
-            break;
+            case ICGGameKeyCode_Tool8:
+                if( !keyEvt.isRepeat && self.player.tools.count > 7 )
+                    [self interactWithTool: self.player.tools[7]];
+                break;
 
-        case ICGGameKeyCode_Tool9:
-            if( !keyEvt.isRepeat && self.player.tools.count > 8 )
-                [self interactWithTool: self.player.tools[8]];
-            break;
+            case ICGGameKeyCode_Tool9:
+                if( !keyEvt.isRepeat && self.player.tools.count > 8 )
+                    [self interactWithTool: self.player.tools[8]];
+                break;
 
-        case ICGGameKeyCode_Tool0:
-            if( !keyEvt.isRepeat && self.player.tools.count > 9 )
-                [self interactWithTool: self.player.tools[9]];
-            break;
+            case ICGGameKeyCode_Tool0:
+                if( !keyEvt.isRepeat && self.player.tools.count > 9 )
+                    [self interactWithTool: self.player.tools[9]];
+                break;
+        }
+    }
+    else
+    {
+    
     }
 }
 
@@ -304,6 +366,15 @@
 -(void) handleGameKeyUp: (ICGGameKeyEvent*)keyEvt
 {
     //NSLog(@"Key %ld released", keyEvt.keyCode);
+
+    if( self.currentConversationNode == nil )
+    {
+        
+    }
+    else
+    {
+    
+    }
 }
 
 

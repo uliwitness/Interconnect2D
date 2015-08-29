@@ -173,12 +173,12 @@
         // Was an error? Get error message off the stack and send it back:
         if( s != 0 )
         {
-            printf("Error: %s\n", lua_tostring(luaState, -1) );
+            NSLog(@"Error: %s\n", lua_tostring(luaState, -1) );
             lua_pop(luaState, 1); // Remove error message from stack.
+            
+            NSLog(@"global.variables = %@", self.owningView.variables);
+            NSLog(@"me.variables = %@", self.variables);
         }
-        
-        NSLog(@"global.variables = %@", self.owningView.variables);
-        NSLog(@"me.variables = %@", self.variables);
     }
 }
 

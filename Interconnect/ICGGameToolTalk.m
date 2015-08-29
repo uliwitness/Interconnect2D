@@ -10,6 +10,7 @@
 #import "ICGGameItem.h"
 #import "ICGConversation.h"
 #import "ICGActor.h"
+#import "ICGGameView.h"
 
 
 @implementation ICGGameToolTalk
@@ -18,7 +19,8 @@
 {
     //NSLog( @"%@ interacting with %@", self.wielder.image.name, otherItem.image.name );
     
-    otherItem.balloonText = [(ICGActor*)otherItem playerConversation].firstNode.nodeMessage;
+    otherItem.owningView.currentConversationNode = [(ICGActor*)otherItem playerConversation].firstNode;
+    otherItem.owningView.currentConversation = [(ICGActor*)otherItem playerConversation];
     [otherItem performSelector: @selector(setBalloonText:) withObject: nil afterDelay: 2.0];
     
     return YES;
