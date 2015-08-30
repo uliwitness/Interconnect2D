@@ -28,22 +28,37 @@
 
 -(BOOL) application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    if( self.filePath && ![self.gameView writeToFile: self.filePath] )
+    BOOL    success = YES;
+    if( self.filePath )
     {
-        NSAlert *   alert = [NSAlert new];
-        alert.messageText = @"Failed to save previous document";
-        alert.informativeText = [NSString stringWithFormat: @"Couldn't save to %@", self.filePath];
-        [alert addButtonWithTitle: @"OK"];
-        [alert beginSheetModalForWindow: self.window completionHandler:^(NSModalResponse returnCode){}];
-        return NO;
+        [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"willSave"];
+        if( ![self.gameView writeToFile: self.filePath] )
+        {
+            [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didFailToSave"];
+            NSAlert *   alert = [NSAlert new];
+            alert.messageText = @"Failed to save previous document";
+            alert.informativeText = [NSString stringWithFormat: @"Couldn't save to %@", self.filePath];
+            [alert addButtonWithTitle: @"OK"];
+            [alert beginSheetModalForWindow: self.window completionHandler:^(NSModalResponse returnCode){}];
+            return NO;
+        }
+        else
+        {
+            [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didSave"];
+        }
     }
     else
     {
         self.filePath = filename;
-        return [self.gameView readFromFile: self.filePath];
+        success = [self.gameView readFromFile: self.filePath];
+        if( success )
+        {
+            [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didLoad"];
+            [self.gameView refreshItemDisplay];
+        }
     }
     
-    return YES;
+    return success;
 }
 
 
@@ -74,13 +89,16 @@
         thePlayer.tool = tool;
         thePlayer.talkTool = [ICGGameToolTalk new];
         thePlayer.talkTool.wielder = thePlayer;
-        thePlayer.script = @"global.foo = \"Hello, I'm Kate!\\n\"\n"
-                            "io.write( global.foo )\n"
-                            "global.foo = \"This is boring...\\n\"\n"
-                            "io.write( global.foo )\n"
-                            "me.superiority = \"Complex.\\n\"\n"
-                            "io.write( me.superiority )\n"
-                            "me.balloonText = \"G'day, mate!\"\n";
+        thePlayer.script = @"function didLoad()\n"
+                            "   global.foo = \"Hello, I'm Kate!\\n\"\n"
+                            "   io.write( global.foo )\n"
+                            "   io.write( \"My name is: \", items.KateHelios.name, \"\\n\" )\n"
+                            "   global.foo = \"This is boring...\\n\"\n"
+                            "   io.write( global.foo )\n"
+                            "   me.superiority = \"Complex.\\n\"\n"
+                            "   io.write( me.superiority )\n"
+                            "   me.balloonText = \"G'day, mate!\"\n"
+                            "end\n";
         self.gameView.player = thePlayer;
         [self.gameView.items addObject: thePlayer];
         
@@ -112,25 +130,33 @@
         obstacle.posOffset = NSMakeSize( truncf(imgSize.width / 2), 0 );
         [self.gameView.items addObject: obstacle];
         
+        [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didLoad"];
+        
         [self.gameView refreshItemDisplay];
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    // Insert code here to tear down your application
+    [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"willQuit"];
 }
 
 
 -(void) saveDocument: (id)sender
 {
+    [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"willSave"];
     if( ![self.gameView writeToFile: self.filePath] )
     {
+        [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didFailToSave"];
         NSAlert *   alert = [NSAlert new];
         alert.messageText = @"Failed to save document";
         alert.informativeText = [NSString stringWithFormat: @"Couldn't save to %@", self.filePath];
         [alert addButtonWithTitle: @"OK"];
         [alert beginSheetModalForWindow: self.window completionHandler:^(NSModalResponse returnCode){}];
+    }
+    else
+    {
+        [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didSave"];
     }
 }
 

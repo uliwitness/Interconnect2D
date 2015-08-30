@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ICGLuaExposedObject.h"
 
 
 @class ICGGameTool;
@@ -30,7 +31,7 @@
 @end
 
 
-@interface ICGGameItem : NSObject <NSCoding>
+@interface ICGGameItem : ICGLuaExposedObject <NSCoding>
 
 @property (copy,nonatomic) NSString*                name;
 @property (copy,nonatomic) NSString*                script;
@@ -59,5 +60,7 @@
 -(ICGGamePath*) pathFindAwayFromItem: (ICGGameItem*)otherItem distance: (CGFloat)desiredDistance withObstacles: (NSArray*)items;    // Run away from a threat.
 
 -(void)     advanceAnimation;
+
+-(BOOL)     runScript: (NSString*)functionName;
 
 @end

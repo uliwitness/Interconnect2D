@@ -850,6 +850,25 @@
 }
 
 
+-(BOOL)     runScript: (NSString*)functionName
+{
+    if( !luaState )
+        return NO;
+    lua_getglobal( luaState, functionName.UTF8String );
+    int     globalType = lua_type( luaState, 1 );
+    if( globalType == LUA_TNIL )
+        return NO;
+    int s = lua_pcall( luaState, 0, LUA_MULTRET, 0 );	// Tell Lua to expect 1 param & run it.
+    if( s != 0 )
+    {
+        NSLog(@"Error: %s\n", lua_tostring(luaState, -1) );
+        lua_pop(luaState, 1); // Remove error message from stack.
+        return NO;
+    }
+    return YES;
+}
+
+
 static int ICGGameItemSetGlobal( lua_State *luaState )
 {
 	int             numArgs = lua_gettop(luaState);    // Number of arguments.
@@ -869,6 +888,7 @@ static int ICGGameItemSetGlobal( lua_State *luaState )
 
 	return 0;   // Number of results.
 }
+
 
 static int ICGGameItemGetGlobal( lua_State *luaState )
 {
@@ -895,6 +915,7 @@ static int ICGGameItemGetGlobal( lua_State *luaState )
 
 	return 1;   // Number of results.
 }
+
 
 static int ICGGameItemSetVariable( lua_State *luaState )
 {
