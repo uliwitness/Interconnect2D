@@ -45,6 +45,7 @@
 		557DBF011B9104FF00470F05 /* ICGConversation.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBF001B9104FF00470F05 /* ICGConversation.m */; };
 		557DBF041B911B6100470F05 /* ICGGameToolTalk.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBF031B911B6100470F05 /* ICGGameToolTalk.m */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
+		55DF4EDB1B935227006AAA92 /* ICGLuaScriptOwningObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,6 +104,8 @@
 		557DBF031B911B6100470F05 /* ICGGameToolTalk.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameToolTalk.m; sourceTree = "<group>"; };
 		55A82B451B86A9FE00E21718 /* ICGGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameView.h; sourceTree = "<group>"; };
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
+		55DF4ED91B935227006AAA92 /* ICGLuaScriptOwningObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGLuaScriptOwningObject.h; sourceTree = "<group>"; };
+		55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGLuaScriptOwningObject.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +214,8 @@
 				557DBF001B9104FF00470F05 /* ICGConversation.m */,
 				557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */,
 				557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */,
+				55DF4ED91B935227006AAA92 /* ICGLuaScriptOwningObject.h */,
+				55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -363,6 +368,7 @@
 				55069C081B813CBC00CDD0DB /* ICGAppDelegate.m in Sources */,
 				557DBEEC1B88A3F200470F05 /* ICGAnimation.m in Sources */,
 				557DBEFE1B8B9CDC00470F05 /* ICGLuaExposedObject.m in Sources */,
+				55DF4EDB1B935227006AAA92 /* ICGLuaScriptOwningObject.m in Sources */,
 				557247271B87D8A300747C6A /* ICGGameItem.m in Sources */,
 				557247241B87D83B00747C6A /* ICGGameTool.m in Sources */,
 				557DBEE81B88877800470F05 /* ICGActor.m in Sources */,
@@ -602,6 +608,7 @@
 				557DBEF41B8A763500470F05 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

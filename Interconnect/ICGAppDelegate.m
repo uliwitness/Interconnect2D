@@ -95,8 +95,8 @@
                             "   io.write( \"My name is: \", KateHelios.name, \"\\n\" )\n"
                             "   global.foo = \"This is boring...\\n\"\n"
                             "   io.write( global.foo )\n"
-                            "   me.superiority = \"Complex.\\n\"\n"
-                            "   io.write( me.superiority )\n"
+                            "   variables.superiority = \"Complex.\\n\"\n"
+                            "   io.write( variables.superiority )\n"
                             "   me.balloonText = \"G'day, mate!\"\n"
                             "end\n";
         self.gameView.player = thePlayer;
