@@ -148,7 +148,7 @@
         lua_setmetatable( luaState, -2 );   // Associate metatable with object holding globals.
 
         lua_setglobal( luaState, "global" );    // Put the object holding globals into a Lua global named "global".
-
+        
         // Set up our 'me' table:
         lua_newtable( luaState );   // Create object to hold me.
         lua_newtable( luaState );   // Create metatable of object to hold me.
@@ -174,6 +174,15 @@
         lua_setmetatable( luaState, -2 );   // Associate metatable with object holding me.
 
         lua_setglobal( luaState, "items" );    // Put the object holding me into a Lua global named "me".
+
+        // Set the __index fallback of Lua's globals table so we can inject our objects as globals:
+        lua_pushglobaltable( luaState );
+        lua_newtable( luaState );   // Create metatable for object holding *Lua's* globals.
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemsGetItem, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__index" ); // Put the Lua-wrapped C function in the global as "__index".
+        lua_setmetatable( luaState, -2 );   // Associate metatable with Lua's object holding globals.
+        lua_pop( luaState, 1 ); // Pop the global table back off the stack now we've modified it, or it'll confuse the lua_pcall below.
 
         if( s == 0 )
         {
@@ -1012,8 +1021,7 @@ static int ICGGameItemsGetItem( lua_State *luaState )
             [value pushIntoContext: luaState];
         else
         {
-            lua_pushstring(luaState, "Can't find object of this name.");
-            lua_error(luaState);
+            lua_pushnil( luaState );    // Otherwise unimplemented functions never end up reported as NIL and are always errors, and clients would have to provide empty implementations of all of them.
         }
     }
 

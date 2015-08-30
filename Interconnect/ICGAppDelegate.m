@@ -92,7 +92,7 @@
         thePlayer.script = @"function didLoad()\n"
                             "   global.foo = \"Hello, I'm Kate!\\n\"\n"
                             "   io.write( global.foo )\n"
-                            "   io.write( \"My name is: \", items.KateHelios.name, \"\\n\" )\n"
+                            "   io.write( \"My name is: \", KateHelios.name, \"\\n\" )\n"
                             "   global.foo = \"This is boring...\\n\"\n"
                             "   io.write( global.foo )\n"
                             "   me.superiority = \"Complex.\\n\"\n"
