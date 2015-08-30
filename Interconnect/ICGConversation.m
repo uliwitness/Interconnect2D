@@ -14,6 +14,7 @@
 @property (copy) NSString*          nodeIdentifier;         // Identifier used to refer to this conversation node in code.
 @property (copy) NSString*          nodeMessage;    // Message to show above the choices. (E.g. instructions).
 @property (strong) NSMutableArray*  choices;                // Array of ICGConversationChoice.
+@property (weak) ICGConversation*   owner;
 
 @end
 
@@ -150,6 +151,7 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
 -(ICGConversationChoice*)   addPlainChoice: (NSString*)inName message: (NSString*)inMessage
 {
     ICGConversationChoice*  newChoice = [ICGConversationChoice plainChoice: inName message: inMessage];
+    newChoice.owner = self;
     [self.choices addObject: newChoice];
     return newChoice;
 }
@@ -158,6 +160,7 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
 -(ICGConversationChoice*)   addMissionInfoChoice: (NSString*)inName message: (NSString*)inMessage
 {
     ICGConversationChoice*  newChoice = [ICGConversationChoice missionInfoChoice: inName message: inMessage];
+    newChoice.owner = self;
     [self.choices addObject: newChoice];
     return newChoice;
 }
@@ -166,6 +169,7 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
 -(ICGConversationChoice*)   addMissionAcceptChoice: (NSString*)inName message: (NSString*)inMessage
 {
     ICGConversationChoice*  newChoice = [ICGConversationChoice missionAcceptChoice: inName message: inMessage];
+    newChoice.owner = self;
     [self.choices addObject: newChoice];
     return newChoice;
 }
@@ -235,6 +239,7 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
 -(id<ICGConversationNode>) conversationNode
 {
     ICGConversationNode*    newNode = [[ICGConversationNode alloc] init];
+    newNode.owner = self;
     [self.nodes addObject: newNode];
     if( !self.firstNode )
         self.firstNode = newNode;
@@ -247,6 +252,7 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
     ICGConversationNode*    newNode = [[ICGConversationNode alloc] init];
     newNode.nodeIdentifier = inIdentifier;
     newNode.nodeMessage = inMessage;
+    newNode.owner = self;
     [self.nodes addObject: newNode];
     if( !self.firstNode )
         self.firstNode = newNode;

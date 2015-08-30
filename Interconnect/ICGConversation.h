@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 
 
+@class ICGActor;
+
+
 typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 {
     ICGConversationChoiceType_Plain,          // Nothing special, just a thing the player can say.
@@ -20,6 +23,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 
 
 @class ICGConversation;
+@class ICGGameItem;
 @protocol ICGConversationNode;
 
 
@@ -35,6 +39,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 @property (copy) NSString*                      choiceMessage;  // Message to display when the user chooses this button.
 @property (assign) ICGConversationChoiceType    conversationChoiceType;
 @property (weak) id<ICGConversationNode>        nextConversationNode;   // Node to go to when this choice is picked.
+@property (weak) id<ICGConversationNode>        owner;          // Node in which this is listed.
 
 @end
 
@@ -47,10 +52,11 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 @protocol ICGConversationNode <NSObject,NSCoding>
 
 @property (copy) NSString*          nodeIdentifier;         // Identifier used to refer to this conversation node in code.
-@property (copy) NSString*          nodeMessage;    // Message to show above the choices. (E.g. instructions).
-@property (strong) NSMutableArray*  choices;                // Array of ICGConversationChoice.
+@property (copy) NSString*          nodeMessage;            // Message to show above the choices. (E.g. instructions).
+@property (readonly) NSArray*       choices;                // Array of ICGConversationChoice.
 @property (readonly) BOOL           hasMission;             // Contains ICGConversationChoiceType_MissionInfo choices.
 @property (readonly) BOOL           hasMissionTurnIn;       // Contains ICGConversationChoiceType_MissionTurnIn choices.
+@property (weak) ICGConversation*   owner;                  // Conversation containing this node.
 
 -(ICGConversationChoice*)   addPlainChoice: (NSString*)inName message: (NSString*)inMessage;
 -(ICGConversationChoice*)   addMissionInfoChoice: (NSString*)inName message: (NSString*)inMessage;
@@ -66,6 +72,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 @property (strong) id<ICGConversationNode>  firstNode;  // The ICGConversationNode at which we should start. Defaults to the first node created using -conversationNode.
 @property (readonly) BOOL                   hasMission;     // Contains mission info choices in the firstNode;
 @property (readonly) BOOL                   hasMissionTurnIn;       // Contains ICGConversationChoiceType_MissionTurnIn choices.
+@property (weak) ICGActor*                  owner;
 
 -(id<ICGConversationNode>) conversationNode;   // Create a new ICGConversationNode associated with this conversation.
 -(id<ICGConversationNode>) conversationNode: (NSString*)inIdentifier message: (NSString*)inMessage;

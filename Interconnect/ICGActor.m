@@ -8,6 +8,7 @@
 
 #import "ICGActor.h"
 #import "ICGGameView.h"
+#import "ICGConversation.h"
 
 
 @implementation ICGActor
@@ -74,6 +75,13 @@
     }
     
     return [super moveByX: x y: y collidingWithItems: items];
+}
+
+
+-(void) setPlayerConversation:(ICGConversation *)playerConversation
+{
+    _playerConversation = playerConversation;
+    [_playerConversation setOwner: self];
 }
 
 @end

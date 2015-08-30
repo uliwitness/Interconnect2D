@@ -365,6 +365,13 @@
     self.player.balloonText = currChoice.choiceMessage;
     _conversationChosen = YES;
     [self setNeedsDisplay: YES];
+    
+    ICGActor*   actor = currChoice.owner.owner.owner;
+    if( actor )
+    {
+        [actor runScript: @"didChooseConversationNode" withParams: @[ currChoice.choiceName, @"Hullaballoo!" ]];
+    }
+    
     [self performSelector: @selector(goNextFromConversationChoice:) withObject: currChoice afterDelay: 2.0];
 }
 

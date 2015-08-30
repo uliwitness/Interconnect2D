@@ -118,6 +118,9 @@
         [node2 addPlainChoice: @"You're right." message: @"I'm sorry, you really don't deserve this."];
         cc.nextConversationNode = node2;
         obstacle.playerConversation = convo;
+        obstacle.script = @"function didChooseConversationNode(nodeName)\n"
+                            "   io.write( \"Chose node: \\\"\", nodeName, \"\\\"\\n\" )\n"
+                            "end\n";
         [self.gameView.items addObject: obstacle];
 
         obstacle = [ICGActor new];

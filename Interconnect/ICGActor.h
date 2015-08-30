@@ -19,6 +19,6 @@
 @property (strong) ICGAnimation  *   upWalkAnimation;
 @property (strong) ICGAnimation  *   downWalkAnimation;
 
-@property (strong) ICGConversation*  playerConversation;
+@property (strong,nonatomic) ICGConversation*  playerConversation;
 
 @end
