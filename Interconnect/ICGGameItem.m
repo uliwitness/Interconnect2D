@@ -162,6 +162,19 @@
 
         lua_setglobal( luaState, "me" );    // Put the object holding me into a Lua global named "me".
 
+        // Set up our 'items' table:
+        lua_newtable( luaState );   // Create object to hold me.
+        lua_newtable( luaState );   // Create metatable of object to hold me.
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemsGetItem, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__index" ); // Put the Lua-wrapped C function in the global as "__index".
+        lua_pushlightuserdata( luaState, (__bridge void *)self );
+        lua_pushcclosure( luaState, ICGGameItemsSetItem, 1 );    // Wrap our C function in Lua.
+        lua_setfield( luaState, -2, "__newindex" ); // Put the Lua-wrapped C function in the global as "__newindex".
+        lua_setmetatable( luaState, -2 );   // Associate metatable with object holding me.
+
+        lua_setglobal( luaState, "items" );    // Put the object holding me into a Lua global named "me".
+
         if( s == 0 )
         {
             // Run it, with 0 params, (this creates the functions in their globals so we can call them)
@@ -922,6 +935,65 @@ static int ICGGameItemGetVariable( lua_State *luaState )
         NSString    *   value = self.variables[ key ];
         
         lua_pushstring( luaState, [value UTF8String] );
+    }
+
+	return 1;   // Number of results.
+}
+
+
+static int ICGGameItemsSetItem( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 3 )
+    {
+        lua_pushstring(luaState, "__newindex takes 3 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        NSString    *   value = [NSString stringWithUTF8String: lua_tostring( luaState, 3 )];
+        NSLog( @"Script attempted to set %@ on %@.%@.", value, self, key );
+        lua_pushstring(luaState, "The 'items' table can only be read.");
+        lua_error(luaState);
+    }
+
+	return 0;   // Number of results.
+}
+
+
+static int ICGGameItemsGetItem( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGGameItem*	self = (__bridge ICGGameItem*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    if( numArgs != 2 )
+    {
+        lua_pushstring(luaState, "__index takes 2 arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        ICGGameItem *   value = nil;
+        for( ICGGameItem* obj in self.owningView.items )
+        {
+            if( [obj.name caseInsensitiveCompare: key] == NSOrderedSame )
+            {
+                value = obj;
+                break;
+            }
+        }
+        
+        if( value )
+            [value pushIntoContext: luaState];
+        else
+        {
+            lua_pushstring(luaState, "Can't find object of this name.");
+            lua_error(luaState);
+        }
     }
 
 	return 1;   // Number of results.
