@@ -340,10 +340,10 @@
 			files = (
 			);
 			inputPaths = (
-				"${PROJECT_DIRECTORY}/lua/src/lua.h",
+				"${PROJECT_DIR}/lua/src/lua.h",
 			);
 			outputPaths = (
-				"${PROJECT_DIRECTORY}/lua/src/liblua.a",
+				"${PROJECT_DIR}/lua/src/liblua.a",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
