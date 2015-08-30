@@ -186,7 +186,7 @@
         // Was an error? Get error message off the stack and send it back:
         if( s != 0 )
         {
-            NSLog(@"Error: %s\n", lua_tostring(luaState, -1) );
+            NSLog(@"Compile error in %@: %s\n", self.name, lua_tostring(luaState, -1) );
             lua_pop(luaState, 1); // Remove error message from stack.
             
             NSLog(@"global.variables = %@", self.owningView.variables);
@@ -861,7 +861,7 @@
     int s = lua_pcall( luaState, 0, LUA_MULTRET, 0 );	// Tell Lua to expect 1 param & run it.
     if( s != 0 )
     {
-        NSLog(@"Error: %s\n", lua_tostring(luaState, -1) );
+        NSLog(@"Error running %@.%@: %s\n", self.name, functionName, lua_tostring(luaState, -1) );
         lua_pop(luaState, 1); // Remove error message from stack.
         return NO;
     }
