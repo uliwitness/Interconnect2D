@@ -66,27 +66,29 @@
 }
 
 
--(BOOL)     runScript: (NSString*)functionName
+-(NSArray*)     runScript: (NSString*)functionName
 {
     return [self runScript: functionName withParams: nil];
 }
 
 
--(BOOL)     runScript: (NSString*)functionName withParams: (NSArray*)inParamStrings
+-(NSArray*)     runScript: (NSString*)functionName withParams: (NSArray*)inParamStrings
 {
     //NSLog( @"Calling %@ on %@", functionName, self );
 
     if( !luaState )
         [self compileScriptIfPossible];
     if( !luaState )
-        return NO;
+        return nil;
+    
+    //NSLog(@"\t%d stack elements before", lua_gettop(luaState));
     
     lua_getglobal( luaState, functionName.UTF8String );
     int     globalType = lua_type( luaState, -1 );
     if( globalType == LUA_TNIL )
     {
         //NSLog(@"\t%@ not implemented (NIL)", functionName);
-        return NO;
+        return nil;
     }
     int     pcount = (int)inParamStrings.count;
     for( NSString* currParam in inParamStrings )
@@ -96,9 +98,23 @@
     {
         NSLog(@"Error running %@.%@: %s\n", self.name, functionName, lua_tostring(luaState, -1) );
         lua_pop(luaState, 1); // Remove error message from stack.
-        return NO;
+        return nil;
     }
-    return YES;
+    int numResults = lua_gettop(luaState);
+    NSMutableArray *   array = [NSMutableArray arrayWithCapacity: numResults];
+    //NSLog(@"\t%d stack elements after", numResults);
+    for( int x = 0; x < numResults; x++ )
+    {
+        int currSlot = (numResults -x);
+        const char* str = lua_tostring(luaState, currSlot);
+        if( !str && lua_type(luaState, currSlot) == LUA_TNIL )
+            str = "nil";
+        else if( !str )
+            str = (lua_toboolean(luaState, currSlot) ? "true" : "false");
+        [array addObject: [NSString stringWithUTF8String: str]];
+    }
+    lua_pop( luaState, numResults );
+    return array;
 }
 
 

@@ -19,7 +19,7 @@
 @property (weak,nonatomic) ICGGameView*             owningView;         // Subclassers only. The view in which we're being displayed.
 @property (strong,nonatomic) NSMutableDictionary*   variables;          // Variables game logic can use to remember state of this item.
 
--(BOOL)     runScript: (NSString*)functionName;
--(BOOL)     runScript: (NSString*)functionName withParams: (NSArray*)inParamStrings;
+-(NSArray*) runScript: (NSString*)functionName;
+-(NSArray*) runScript: (NSString*)functionName withParams: (NSArray*)inParamStrings;
 
 @end

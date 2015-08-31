@@ -40,6 +40,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 @property (assign) ICGConversationChoiceType    conversationChoiceType;
 @property (weak) id<ICGConversationNode>        nextConversationNode;   // Node to go to when this choice is picked.
 @property (weak) id<ICGConversationNode>        owner;          // Node in which this is listed.
+@property (assign,getter=isHidden) BOOL         hidden;
 
 @end
 

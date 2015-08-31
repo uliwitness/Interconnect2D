@@ -120,6 +120,10 @@
         obstacle.playerConversation = convo;
         obstacle.script = @"function didChooseConversationNode(nodeName)\n"
                             "   io.write( \"Chose node: \\\"\", nodeName, \"\\\"\\n\" )\n"
+                            "end\n"
+                            "\n"
+                            "function shouldShowConversationNode(nodeName)\n"
+                            "   return nodeName ~= \"Thanks!\"\n"
                             "end\n";
         [self.gameView.items addObject: obstacle];
 
