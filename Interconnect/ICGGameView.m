@@ -64,6 +64,7 @@ typedef struct ICGConversationChoiceRect
 @property (assign,nonatomic) NSUInteger             moveIndex;
 @property (retain,nonatomic) NSTimer*               moveTimer;
 @property (retain,nonatomic) NSMutableData*         conversationChoiceRectArrayStorage;
+@property (readwrite) ICGGameItem*                  itemBeingEdited;
 
 @end
 
@@ -150,7 +151,20 @@ typedef struct ICGConversationChoiceRect
     
     [self doBackwards: YES forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
     {
+        BOOL    selected = (self.isEditing && currItem == self.itemBeingEdited);
+        
+        if( selected )
+        {
+            [[NSColor.selectedTextBackgroundColor colorWithAlphaComponent: 0.5] set];
+            [NSBezierPath fillRect: imgBox];
+        }
         [currItem drawInRect: imgBox];
+        if( selected )
+        {
+            [NSColor.keyboardFocusIndicatorColor set];
+            [NSBezierPath setDefaultLineWidth: 2];
+            [NSBezierPath strokeRect: imgBox];
+        }
         
         return YES;
     }];
@@ -307,6 +321,21 @@ typedef struct ICGConversationChoiceRect
 - (void)mouseDown:(NSEvent *)theEvent
 {
     NSPoint     hitPos = [self convertPoint: theEvent.locationInWindow fromView: nil];
+    if( self.isEditing )
+    {
+        [self doBackwards: NO forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
+        {
+            if( NSPointInRect( hitPos, imgBox ) )
+            {
+                self.itemBeingEdited = currItem;
+                [self setNeedsDisplay: YES];
+                return NO;  // Was hit! We're done looping!
+            }
+            
+            return YES;
+        }];
+        return;
+    }
     if( self.currentConversationNode == nil )
     {
         [self doBackwards: NO forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
@@ -789,6 +818,25 @@ typedef struct ICGConversationChoiceRect
     [self refreshItemDisplay];
     
     return YES;
+}
+
+
+-(IBAction) toggleEditMode: (id)sender
+{
+    self.editing = YES;
+    [self setNeedsDisplay: YES];
+}
+
+
+-(BOOL) validateMenuItem:(NSMenuItem *)menuItem
+{
+    if( menuItem.action == @selector(toggleEditMode:) )
+    {
+        menuItem.state = self.isEditing ? NSOnState : NSOffState;
+        return YES;
+    }
+    else
+        return [self respondsToSelector: menuItem.action];
 }
 
 @end

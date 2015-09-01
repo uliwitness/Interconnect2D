@@ -345,6 +345,12 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="BCi-1p-bcU"/>
+                            <menuItem title="Edit Map" keyEquivalent="k" id="zZx-aH-bBc">
+                                <connections>
+                                    <action selector="toggleEditMode:" target="-1" id="dFM-Tk-fRw"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
