@@ -11,6 +11,7 @@
 #import "ICGGameItem.h"
 #import "ICGActor.h"
 #import "ICGConversation.h"
+#import "ICGGameItemInspectorWindowController.h"
 
 
 // The bigger this number, the more subtle the perspective effect:
@@ -323,17 +324,20 @@ typedef struct ICGConversationChoiceRect
     NSPoint     hitPos = [self convertPoint: theEvent.locationInWindow fromView: nil];
     if( self.isEditing )
     {
+        self.itemBeingEdited = nil;
+        [self setNeedsDisplay: YES];
+        
         [self doBackwards: NO forEachGameItem:^( ICGGameItem* currItem, NSRect imgBox )
         {
             if( NSPointInRect( hitPos, imgBox ) )
             {
                 self.itemBeingEdited = currItem;
-                [self setNeedsDisplay: YES];
                 return NO;  // Was hit! We're done looping!
             }
             
             return YES;
         }];
+        [ICGGameItemInspectorWindowController.sharedInspectorWindowController reflectItem: self.itemBeingEdited];
         return;
     }
     if( self.currentConversationNode == nil )
@@ -821,6 +825,13 @@ typedef struct ICGConversationChoiceRect
 }
 
 
+-(IBAction) orderFrontGameItemInfoPanel: (id)sender
+{
+    [ICGGameItemInspectorWindowController.sharedInspectorWindowController showWindow: self];
+    [ICGGameItemInspectorWindowController.sharedInspectorWindowController reflectItem: self.itemBeingEdited];
+}
+
+
 -(IBAction) toggleEditMode: (id)sender
 {
     self.editing = YES;
@@ -834,6 +845,10 @@ typedef struct ICGConversationChoiceRect
     {
         menuItem.state = self.isEditing ? NSOnState : NSOffState;
         return YES;
+    }
+    else if( menuItem.action == @selector(orderFrontGameItemInfoPanel:) )
+    {
+        return self.isEditing && self.itemBeingEdited != nil;
     }
     else
         return [self respondsToSelector: menuItem.action];

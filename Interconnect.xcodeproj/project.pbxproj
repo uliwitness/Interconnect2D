@@ -46,6 +46,8 @@
 		557DBF041B911B6100470F05 /* ICGGameToolTalk.m in Sources */ = {isa = PBXBuildFile; fileRef = 557DBF031B911B6100470F05 /* ICGGameToolTalk.m */; };
 		55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A82B461B86A9FE00E21718 /* ICGGameView.m */; };
 		55DF4EDB1B935227006AAA92 /* ICGLuaScriptOwningObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */; };
+		55E39C451B97073000A31F28 /* ICGGameItemInspectorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 55E39C431B97073000A31F28 /* ICGGameItemInspectorWindowController.m */; };
+		55E39C461B97073000A31F28 /* ICGGameItemInspectorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55E39C441B97073000A31F28 /* ICGGameItemInspectorWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +108,9 @@
 		55A82B461B86A9FE00E21718 /* ICGGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameView.m; sourceTree = "<group>"; };
 		55DF4ED91B935227006AAA92 /* ICGLuaScriptOwningObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGLuaScriptOwningObject.h; sourceTree = "<group>"; };
 		55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGLuaScriptOwningObject.m; sourceTree = "<group>"; };
+		55E39C421B97073000A31F28 /* ICGGameItemInspectorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGGameItemInspectorWindowController.h; sourceTree = "<group>"; };
+		55E39C431B97073000A31F28 /* ICGGameItemInspectorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGGameItemInspectorWindowController.m; sourceTree = "<group>"; };
+		55E39C441B97073000A31F28 /* ICGGameItemInspectorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ICGGameItemInspectorWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +221,9 @@
 				557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */,
 				55DF4ED91B935227006AAA92 /* ICGLuaScriptOwningObject.h */,
 				55DF4EDA1B935227006AAA92 /* ICGLuaScriptOwningObject.m */,
+				55E39C421B97073000A31F28 /* ICGGameItemInspectorWindowController.h */,
+				55E39C431B97073000A31F28 /* ICGGameItemInspectorWindowController.m */,
+				55E39C441B97073000A31F28 /* ICGGameItemInspectorWindowController.xib */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -324,6 +332,7 @@
 				554509521B87FE010037DCF5 /* SterntalerWalkAnimationR2.png in Resources */,
 				554509571B87FE010037DCF5 /* SterntalerWalkAnimation5.png in Resources */,
 				554509511B87FE010037DCF5 /* SterntalerWalkAnimation2.png in Resources */,
+				55E39C461B97073000A31F28 /* ICGGameItemInspectorWindowController.xib in Resources */,
 				55069C0F1B813CBC00CDD0DB /* MainMenu.xib in Resources */,
 				554509531B87FE010037DCF5 /* SterntalerWalkAnimation3.png in Resources */,
 			);
@@ -361,6 +370,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55E39C451B97073000A31F28 /* ICGGameItemInspectorWindowController.m in Sources */,
 				557DBF011B9104FF00470F05 /* ICGConversation.m in Sources */,
 				55A82B471B86A9FE00E21718 /* ICGGameView.m in Sources */,
 				55069C0A1B813CBC00CDD0DB /* main.m in Sources */,
