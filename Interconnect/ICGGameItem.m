@@ -176,7 +176,7 @@
         [NSGraphicsContext restoreGraphicsState];
     }
     
-    if( self.balloonText )
+    if( self.balloonText && self.balloonText.length > 0 )
     {
         NSDictionary*   balloonAttrs = @{ NSFontAttributeName: [NSFont systemFontOfSize: [NSFont smallSystemFontSize]], NSForegroundColorAttributeName: NSColor.lightGrayColor };
         
