@@ -7,10 +7,12 @@
 //
 
 #import "ICGLuaExposedObject.h"
+
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include <objc/runtime.h>
 
 
 @implementation ICGLuaExposedObject
@@ -77,14 +79,58 @@ static int ICGLuaExposedObjectGetProperty( lua_State *luaState )
     else
     {
         NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
+        key = [key stringByReplacingOccurrencesOfString: @"_" withString: @":"];
         
-        id  theVal = [self valueForKey: key];
-        if( [theVal respondsToSelector: @selector(stringValue)] )
-            theVal = [theVal stringValue];
-        lua_pushstring( luaState, [theVal UTF8String] );
+        if( class_getProperty( self.class, key.UTF8String ) != NULL )
+        {
+            id  theVal = [self valueForKey: key];
+            if( [theVal respondsToSelector: @selector(stringValue)] )
+                theVal = [theVal stringValue];
+            lua_pushstring( luaState, [theVal UTF8String] );
+        }
+        else
+        {
+            if( [self respondsToSelector: NSSelectorFromString(key)] )
+            {
+                lua_pushlightuserdata( luaState, (__bridge void *)self );
+                lua_pushstring( luaState, key.UTF8String );
+                lua_pushcclosure( luaState, ICGLuaExposedObjectCallMethod, 2);
+            }
+            else
+                lua_pushnil( luaState );
+        }
     }
 
 	return 1;   // Number of results.
 }
+
+
+static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
+{
+	int                     numArgs = lua_gettop(luaState);    // Number of arguments.
+    ICGLuaExposedObject*	self = (__bridge ICGLuaExposedObject*) lua_touserdata( luaState, lua_upvalueindex(1) );
+
+    NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, lua_upvalueindex(2) )];
+    NSLog( @"Call method %@ (%d args) on object %@", key, numArgs, self );
+    
+//    SEL             methodName = NSSelectorFromString(key);
+//    NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: methodName]];
+//    inv.target = self;
+//    inv.selector = methodName;
+//    
+//    for( int currArgIdx = 1; currArgIdx <= numArgs; currArgIdx++ )
+//    {
+//        const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
+//        NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
+//        [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+//        NSLog( @"%d: %@ (%s)", currArgIdx, currParamStr, currParamCStr );
+//    }
+//    
+//    NSLog(@"inv: %@ %@", inv.target, NSStringFromSelector(inv.selector) );
+//    [inv invoke];
+    
+	return 0;   // Number of results.
+}
+
 
 @end

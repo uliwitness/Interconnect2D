@@ -98,6 +98,8 @@
                             "   variables.superiority = \"Complex.\\n\"\n"
                             "   io.write( variables.superiority )\n"
                             "   me.balloonText = \"G'day, mate!\"\n"
+                            "   me.setName_(\"Jeff\")\n"
+                            "   Jeff.setName_(\"KateHelios\")\n"
                             "end\n";
         self.gameView.player = thePlayer;
         [self.gameView.items addObject: thePlayer];
