@@ -235,6 +235,11 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
             NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
             [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
         }
+        else if( lua_type(luaState,currArgIdx) == LUA_TSTRING && (strcmp(argType, "r*") == 0 || strcmp(argType, "*") == 0) )    // const char* or char*
+        {
+            const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
+            [inv setArgument: &currParamCStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
         else
         {
             lua_pushfstring(luaState, "ObjC method %s argument %d should be of @encoded type %s", key.UTF8String, currArgIdx, argType);
