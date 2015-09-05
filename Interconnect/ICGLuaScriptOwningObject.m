@@ -9,6 +9,7 @@
 #import "ICGLuaScriptOwningObject.h"
 #import "ICGGameView.h"
 #import "ICGGameItem.h"
+#import "ICGConversation.h"
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -175,7 +176,7 @@
         lua_setmetatable( luaState, -2 );   // Associate metatable with object holding me.
 
         lua_setglobal( luaState, "variables" );    // Put the object holding me into a Lua global named "variables".
-
+        
         // Set up 'me' object:
         [self installIntoContext: luaState asGlobalNamed: "me"];
 
@@ -200,7 +201,10 @@
         lua_setfield( luaState, -2, "__index" ); // Put the Lua-wrapped C function in the global as "__index".
         lua_setmetatable( luaState, -2 );   // Associate metatable with Lua's object holding globals.
         lua_pop( luaState, 1 ); // Pop the global table back off the stack now we've modified it, or it'll confuse the lua_pcall below.
-
+        
+        lua_pushcfunction( luaState, ICGGameItemNewConversation );
+        lua_setglobal( luaState, "Conversation" );    // Put the function into a Lua global named "Conversation".
+        
         if( s == 0 )
         {
             // Run it, with 0 params, (this creates the functions in their globals so we can call them)
@@ -219,6 +223,31 @@
             NSLog(@"me.variables = %@", self.variables);
         }
     }
+}
+
+
+static NSMutableArray*  sConversations = nil;
+
+
+static int ICGGameItemNewConversation( lua_State *luaState )
+{
+	int             numArgs = lua_gettop(luaState);    // Number of arguments.
+
+    if( numArgs != 0 )
+    {
+        lua_pushstring(luaState, "Conversation() takes no arguments.");
+        lua_error(luaState);
+    }
+    else
+    {
+        if( !sConversations )
+            sConversations = [NSMutableArray array];
+        ICGConversation*    convo = [[ICGConversation alloc] init];
+        [sConversations addObject: convo];
+        [convo pushIntoContext: luaState];
+    }
+
+	return 1;   // Number of results.
 }
 
 
@@ -256,14 +285,8 @@ static int ICGGameItemGetGlobal( lua_State *luaState )
     else
     {
         NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
-        
-        if( [key isEqualToString: @"balloonText"] )
-            lua_pushstring( luaState, [self.balloonText UTF8String] );
-        else
-        {
-            NSString    *   value = self.owningView.variables[ key ];
-            lua_pushstring( luaState, [value UTF8String] );
-        }
+        NSString    *   value = self.owningView.variables[ key ];
+        lua_pushstring( luaState, [value UTF8String] );
     }
 
 	return 1;   // Number of results.

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ICGLuaExposedObject.h"
 
 
 @class ICGActor;
@@ -68,7 +69,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 
 // An entire conversation that can be attached to an actor or triggered out-of-line:
 
-@interface ICGConversation : NSObject <NSCoding>
+@interface ICGConversation : ICGLuaExposedObject <NSCoding>
 
 @property (strong) id<ICGConversationNode>  firstNode;  // The ICGConversationNode at which we should start. Defaults to the first node created using -conversationNode.
 @property (readonly) BOOL                   hasMission;     // Contains mission info choices in the firstNode;
