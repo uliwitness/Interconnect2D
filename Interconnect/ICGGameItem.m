@@ -159,7 +159,7 @@
         [NSGraphicsContext saveGraphicsState];
         NSShadow*   shadow = [NSShadow new];
         shadow.shadowBlurRadius = 8.0;
-        shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.2 blue: 0.0 alpha: 1.0];
+        shadow.shadowColor = [NSColor colorWithCalibratedRed: 1.0 green: 0.2 blue: 0.0 alpha: 0.6];
         [shadow set];
         CGContextBeginTransparencyLayerWithRect( NSGraphicsContext.currentContext.graphicsPort, NSInsetRect(imgBox, -3, -3), (CFDictionaryRef)@{} );
         [self.image drawInRect: NSInsetRect(imgBox,-2,-2)];
