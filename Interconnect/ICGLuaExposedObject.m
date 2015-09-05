@@ -340,6 +340,12 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
             lua_pushstring( luaState, [obj UTF8String] );
             numResults = 1;
         }
+        else
+        {
+            lua_pushfstring(luaState, "ObjC method %s return value of unknown @encoded type %s", key.UTF8String, retType);
+            lua_error(luaState);
+            numResults = 0;
+        }
     }
     else if( strcmp(retType, "c") == 0 )
     {
