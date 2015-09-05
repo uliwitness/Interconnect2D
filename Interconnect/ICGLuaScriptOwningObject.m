@@ -204,7 +204,7 @@
         
         lua_pushcfunction( luaState, ICGGameItemNewConversation );
         lua_setglobal( luaState, "Conversation" );    // Put the function into a Lua global named "Conversation".
-        
+
         if( s == 0 )
         {
             // Run it, with 0 params, (this creates the functions in their globals so we can call them)
@@ -243,6 +243,7 @@ static int ICGGameItemNewConversation( lua_State *luaState )
     {
         lua_pushstring(luaState, "Conversation() takes no arguments.");
         lua_error(luaState);
+        return 0;
     }
     else
     {
@@ -287,6 +288,7 @@ static int ICGGameItemGetGlobal( lua_State *luaState )
     {
         lua_pushstring(luaState, "__index takes 2 arguments.");
         lua_error(luaState);
+        return 0;
     }
     else
     {
@@ -319,6 +321,7 @@ static int ICGGameItemSetVariable( lua_State *luaState )
 	return 0;   // Number of results.
 }
 
+
 static int ICGGameItemGetVariable( lua_State *luaState )
 {
 	int                         numArgs = lua_gettop(luaState);    // Number of arguments.
@@ -328,6 +331,7 @@ static int ICGGameItemGetVariable( lua_State *luaState )
     {
         lua_pushstring(luaState, "__index takes 2 arguments.");
         lua_error(luaState);
+        return 0;
     }
     else
     {
@@ -373,6 +377,7 @@ static int ICGGameItemsGetItem( lua_State *luaState )
     {
         lua_pushstring(luaState, "__index takes 2 arguments.");
         lua_error(luaState);
+        return 0;
     }
     else
     {
