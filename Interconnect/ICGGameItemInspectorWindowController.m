@@ -42,7 +42,7 @@ static ICGGameItemInspectorWindowController*    sSharedGameItemController = nil;
 
 -(void) reflectItem: (ICGGameItem *)theItem
 {
-    self.properties = @[ @"name", @"balloonText", @"script" ];
+    self.properties = @[ @"className", @"name", @"balloonText", @"script" ];
     self.reflectedItem = theItem;
     
     [self.propertiesTable reloadData];
