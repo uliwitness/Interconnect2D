@@ -106,18 +106,91 @@ static int ICGLuaExposedObjectGetProperty( lua_State *luaState )
     {
         lua_pushstring(luaState, "__index takes 2 arguments.");
         lua_error(luaState);
+        return 0;
     }
     else
     {
         NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, 2 )];
         key = [key stringByReplacingOccurrencesOfString: @"_" withString: @":"];
         
-        if( class_getProperty( self.class, key.UTF8String ) != NULL )
+        objc_property_t    theProperty = class_getProperty( self.class, key.UTF8String );
+        if( theProperty != NULL )   // Object has property of this name!
         {
-            id  theVal = [self valueForKey: key];
-            if( [theVal respondsToSelector: @selector(stringValue)] )
-                theVal = [theVal stringValue];
-            lua_pushstring( luaState, [theVal UTF8String] );
+            const char * propertyAttrs = property_getAttributes(theProperty);
+            
+            if( strncmp( propertyAttrs, "T@\"ICG", 6 ) == 0 )
+            {
+                ICGLuaExposedObject*  theVal = [self valueForKey: key];
+                [theVal pushIntoContext: luaState];
+            }
+            else if( strncmp( propertyAttrs, "T@\"NSString\"", 11 ) == 0 )
+            {
+                NSString*  theVal = [self valueForKey: key];
+                lua_pushstring( luaState, [theVal UTF8String] );
+            }
+            else if( strncmp( propertyAttrs, "Tc,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushboolean( luaState, [theVal boolValue] );
+            }
+            else if( strncmp( propertyAttrs, "Ti,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal intValue] );
+            }
+            else if( strncmp( propertyAttrs, "TI,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal unsignedIntValue] );
+            }
+            else if( strncmp( propertyAttrs, "Tq,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal longValue] );
+            }
+            else if( strncmp( propertyAttrs, "TQ,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal unsignedLongValue] );
+            }
+            else if( strncmp( propertyAttrs, "Tf,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal floatValue] );
+            }
+            else if( strncmp( propertyAttrs, "Td,", 3 ) == 0 )
+            {
+                NSNumber*  theVal = [self valueForKey: key];
+                lua_pushnumber( luaState, [theVal doubleValue] );
+            }
+            else if( strncmp( propertyAttrs, "T{CGPoint=", 10 ) == 0 )
+            {
+                NSPoint     pos;
+                NSValue*  theVal = [self valueForKey: key];
+                [theVal getValue: &pos];
+                lua_newtable( luaState );
+                lua_pushnumber( luaState, pos.x );
+                lua_setfield( luaState, -2, "x" );
+                lua_pushnumber( luaState, pos.y );
+                lua_setfield( luaState, -2, "y" );
+            }
+            else if( strncmp( propertyAttrs, "T{CGSize=", 9 ) == 0 )
+            {
+                NSSize     pos;
+                NSValue*  theVal = [self valueForKey: key];
+                [theVal getValue: &pos];
+                lua_newtable( luaState );
+                lua_pushnumber( luaState, pos.width );
+                lua_setfield( luaState, -2, "width" );
+                lua_pushnumber( luaState, pos.height );
+                lua_setfield( luaState, -2, "height" );
+            }
+            else
+            {
+                lua_pushfstring(luaState, "Property %s has unknown @encoded type %s.", key.UTF8String, propertyAttrs);
+                lua_error(luaState);
+                return 0;
+            }
         }
         else
         {
