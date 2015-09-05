@@ -141,6 +141,11 @@
         
         [self.gameView refreshItemDisplay];
     }
+    else
+    {
+        [self.gameView.items makeObjectsPerformSelector: @selector(runScript:) withObject: @"didLoad"];
+        [self.gameView refreshItemDisplay];
+    }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
