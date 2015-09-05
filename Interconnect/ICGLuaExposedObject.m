@@ -113,21 +113,21 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
     NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, lua_upvalueindex(2) )];
     NSLog( @"Call method %@ (%d args) on object %@", key, numArgs, self );
     
-//    SEL             methodName = NSSelectorFromString(key);
-//    NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: methodName]];
-//    inv.target = self;
-//    inv.selector = methodName;
-//    
-//    for( int currArgIdx = 1; currArgIdx <= numArgs; currArgIdx++ )
-//    {
-//        const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
-//        NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
-//        [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
-//        NSLog( @"%d: %@ (%s)", currArgIdx, currParamStr, currParamCStr );
-//    }
-//    
-//    NSLog(@"inv: %@ %@", inv.target, NSStringFromSelector(inv.selector) );
-//    [inv invoke];
+    SEL             methodName = NSSelectorFromString(key);
+    NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: methodName]];
+    inv.target = self;
+    inv.selector = methodName;
+    
+    for( int currArgIdx = 1; currArgIdx <= numArgs; currArgIdx++ )
+    {
+        const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
+        NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
+        [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        NSLog( @"%d: %@ (%s)", currArgIdx, currParamStr, currParamCStr );
+    }
+    
+    NSLog(@"inv: %@ %@", inv.target, NSStringFromSelector(inv.selector) );
+    [inv invoke];
     
 	return 0;   // Number of results.
 }
