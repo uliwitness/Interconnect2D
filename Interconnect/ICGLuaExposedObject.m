@@ -127,6 +127,8 @@ static int ICGLuaExposedObjectGetProperty( lua_State *luaState )
                 lua_pushstring( luaState, key.UTF8String );
                 lua_pushcclosure( luaState, ICGLuaExposedObjectCallMethod, 2);
             }
+            else if( [key isEqualToString: @"::objc:object"] )  // __objc_object after colons have been inserted.
+                lua_pushlightuserdata( luaState, (__bridge void *)self );
             else
                 lua_pushnil( luaState );
         }
@@ -142,27 +144,108 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
     ICGLuaExposedObject*	self = (__bridge ICGLuaExposedObject*) lua_touserdata( luaState, lua_upvalueindex(1) );
 
     NSString    *   key = [NSString stringWithUTF8String: lua_tostring( luaState, lua_upvalueindex(2) )];
-    NSLog( @"Call method %@ (%d args) on object %@", key, numArgs, self );
-    
     SEL             methodName = NSSelectorFromString(key);
-    NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: methodName]];
+    NSMethodSignature*  sig = [self methodSignatureForSelector: methodName];
+    NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: sig];
     [inv retainArguments];
     inv.target = self;
     inv.selector = methodName;
     
-    for( int currArgIdx = 1; currArgIdx <= numArgs; currArgIdx++ )
+    if( numArgs != (sig.numberOfArguments -2) ) // -2 because we ignore self and _cmd (method name).
     {
-        const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
-        NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
-        [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
-        NSLog( @"%d: %@ (%s)", currArgIdx, currParamStr, currParamCStr );
+        lua_pushfstring(luaState, "ObjC method %s takes %d parameters, only got %d", key.UTF8String, sig.numberOfArguments -2, numArgs);
+        lua_error(luaState);
+        return 0;
     }
     
-    NSLog(@"inv: %@ %@", inv.target, NSStringFromSelector(inv.selector) );
+    for( int currArgIdx = 1; currArgIdx <= numArgs; currArgIdx++ )
+    {
+        const char* argType = [sig getArgumentTypeAtIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        if( lua_type(luaState,currArgIdx) == LUA_TTABLE && strcmp(argType, "@") == 0 )
+        {
+            lua_getfield( luaState, currArgIdx, "__objc_object" );
+            id  theObject = (__bridge id) lua_touserdata( luaState, -1 );
+            [inv setArgument: &theObject atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
+        else if( lua_type(luaState,currArgIdx) == LUA_TTABLE && strcmp(argType, "{CGPoint=dd}") == 0 )
+        {
+            NSPoint     pos = {0,0};
+            lua_getfield( luaState, currArgIdx, "x" );
+            pos.x = lua_tonumber( luaState, -1 );
+            lua_getfield( luaState, currArgIdx, "y" );
+            pos.y = lua_tonumber( luaState, -1 );
+            [inv setArgument: &pos atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
+        else if( lua_type(luaState,currArgIdx) == LUA_TTABLE && strcmp(argType, "{CGSize=dd}") == 0 )
+        {
+            NSPoint     pos = {0,0};
+            lua_getfield( luaState, currArgIdx, "width" );
+            pos.x = lua_tonumber( luaState, -1 );
+            lua_getfield( luaState, currArgIdx, "height" );
+            pos.y = lua_tonumber( luaState, -1 );
+            [inv setArgument: &pos atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
+        else if( lua_type(luaState,currArgIdx) == LUA_TNUMBER )
+        {
+            if( strcmp(argType,"i") == 0 )
+            {
+                int     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else if( strcmp(argType,"I") == 0 )
+            {
+                int     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else if( strcmp(argType,"q") == 0 )
+            {
+                long     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else if( strcmp(argType,"Q") == 0 )
+            {
+                unsigned long     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else if( strcmp(argType,"f") == 0 )
+            {
+                float     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else if( strcmp(argType,"d") == 0 )
+            {
+                double     theNumber = lua_tonumber( luaState, currArgIdx );
+                [inv setArgument: &theNumber atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+            }
+            else
+            {
+                lua_pushfstring(luaState, "ObjC method %s argument %d should be of @encoded type %s", key.UTF8String, currArgIdx, argType);
+                lua_error(luaState);
+                return 0;
+            }
+        }
+        else if( lua_type(luaState,currArgIdx) == LUA_TBOOLEAN && strcmp(argType, "c") == 0 )
+        {
+            BOOL    theBool = lua_toboolean( luaState, currArgIdx );
+            [inv setArgument: &theBool atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
+        else if( lua_type(luaState,currArgIdx) == LUA_TSTRING && strcmp(argType, "@") == 0 )
+        {
+            const char  * currParamCStr = lua_tostring( luaState, currArgIdx );
+            NSString    * currParamStr = [NSString stringWithUTF8String: currParamCStr];
+            [inv setArgument: &currParamStr atIndex: currArgIdx +1];    // index is 0-based, but need to skip self and _cmd (method name).
+        }
+        else
+        {
+            lua_pushfstring(luaState, "ObjC method %s argument %d should be of @encoded type %s", key.UTF8String, currArgIdx, argType);
+            lua_error(luaState);
+            return 0;
+        }
+    }
+    
     [inv invoke];
     
 	return 0;   // Number of results.
 }
-
 
 @end
