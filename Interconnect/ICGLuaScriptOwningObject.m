@@ -226,6 +226,12 @@
 }
 
 
+-(NSString*)    description
+{
+    return [NSString stringWithFormat: @"<%@: %p \"%@\">", self.className, self, self.name];
+}
+
+
 static NSMutableArray*  sConversations = nil;
 
 
