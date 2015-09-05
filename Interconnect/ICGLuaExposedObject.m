@@ -15,6 +15,37 @@
 #include <objc/runtime.h>
 
 
+
+    static void ICGLuaStackDump (lua_State *L) {
+      int i;
+      int top = lua_gettop(L);
+      for (i = 1; i <= top; i++) {  /* repeat for each level */
+        int t = lua_type(L, i);
+        switch (t) {
+    
+          case LUA_TSTRING:  /* strings */
+            printf("%d: `%s'\n", i, lua_tostring(L, i));
+            break;
+    
+          case LUA_TBOOLEAN:  /* booleans */
+            printf(lua_toboolean(L, i) ? "%d: true\n" : "%d: false\n", i);
+            break;
+    
+          case LUA_TNUMBER:  /* numbers */
+            printf("%d: %g\n", i, lua_tonumber(L, i));
+            break;
+    
+          default:  /* other values */
+            printf("%d: %s\n", i, lua_typename(L, t));
+            break;
+    
+        }
+      }
+      printf("\n");  /* end the listing */
+    }
+
+
+
 @implementation ICGLuaExposedObject
 
 -(void) pushIntoContext: (lua_State*)luaState
