@@ -115,6 +115,7 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
     
     SEL             methodName = NSSelectorFromString(key);
     NSInvocation*   inv = [NSInvocation invocationWithMethodSignature: [self methodSignatureForSelector: methodName]];
+    [inv retainArguments];
     inv.target = self;
     inv.selector = methodName;
     
