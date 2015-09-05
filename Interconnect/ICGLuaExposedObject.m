@@ -250,7 +250,83 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
     
     [inv invoke];
     
-	return 0;   // Number of results.
+    int numResults = 0;
+    
+    const char* retType = [sig methodReturnType];
+    if( strcmp(retType, "@") == 0 )
+    {
+        id  obj = nil;
+        [inv getReturnValue: &obj];
+        if( [obj respondsToSelector: @selector(pushIntoContext:)] )
+        {
+            [obj pushIntoContext: luaState];
+            numResults = 1;
+        }
+        else if( [obj isKindOfClass: NSString.class] )
+        {
+            lua_pushstring( luaState, [obj UTF8String] );
+            numResults = 1;
+        }
+    }
+    else if( strcmp(retType, "c") == 0 )
+    {
+        BOOL  theBoolean = false;
+        [inv getReturnValue: &theBoolean];
+        lua_pushboolean( luaState, theBoolean );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "i") == 0 )
+    {
+        int  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "I") == 0 )
+    {
+        unsigned int  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "q") == 0 )
+    {
+        long  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "Q") == 0 )
+    {
+        unsigned long  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "f") == 0 )
+    {
+        float  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "d") == 0 )
+    {
+        double  theNumber = 0;
+        [inv getReturnValue: &theNumber];
+        lua_pushnumber( luaState, theNumber );
+        numResults = 1;
+    }
+    else if( strcmp(retType, "v") == 0 )
+        numResults = 0;
+    else
+    {
+        lua_pushfstring(luaState, "ObjC method %s return value of unknown @encoded type %s", key.UTF8String, retType);
+        lua_error(luaState);
+        numResults = 0;
+    }
+    
+	return numResults;   // Number of results.
 }
 
 @end
