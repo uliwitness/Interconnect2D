@@ -30,7 +30,7 @@ typedef NS_ENUM(uint32_t, ICGConversationChoiceType)
 
 // One choice in a conversation node:
 
-@interface ICGConversationChoice : NSObject <NSCoding>
+@interface ICGConversationChoice : ICGLuaExposedObject <NSCoding>
 
 +(instancetype)   plainChoice: (NSString*)inName message: (NSString*)inMessage;
 +(instancetype)   missionInfoChoice: (NSString*)inName message: (NSString*)inMessage;

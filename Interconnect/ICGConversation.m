@@ -9,7 +9,7 @@
 #import "ICGConversation.h"
 
 
-@interface ICGConversationNode : NSObject <ICGConversationNode>
+@interface ICGConversationNode : ICGLuaExposedObject <ICGConversationNode>
 
 @property (copy) NSString*          nodeIdentifier;         // Identifier used to refer to this conversation node in code.
 @property (copy) NSString*          nodeMessage;    // Message to show above the choices. (E.g. instructions).
@@ -112,6 +112,8 @@ NSString*   sChoiceTypeNames[ICGConversationChoiceType_INVALID] =
         self.nodeIdentifier = [aDecoder decodeObjectForKey: @"ICGIdentifier"];
         self.nodeMessage = [aDecoder decodeObjectForKey: @"ICGMessage"];
         self.choices = [aDecoder decodeObjectForKey: @"ICGChoices"];
+        if( !self.choices )
+            self.choices = [NSMutableArray array];
     }
     
     return self;
