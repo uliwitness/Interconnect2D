@@ -737,6 +737,16 @@
     return path;
 }
 
+
+-(BOOL)     mayBePickedUpBy: (ICGGameItem*)actor
+{
+    NSArray*    results = [self runScript: @"mayBePickedUpBy" withParams: @[ actor ]];
+    if( !results )
+        return NO;
+    else
+        return [results[0] boolValue];
+}
+
 @end
 
 

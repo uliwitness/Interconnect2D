@@ -46,6 +46,8 @@
 @property (assign,nonatomic) BOOL                   isInteractible;     // For ICGGameView only. Should we draw highlighted because we're close enough to interact?
 @property (assign,nonatomic) NSInteger              animationFrameIndex;// Private. Index of 'image' in 'animation.frames'.
 
+-(BOOL)     mayBePickedUpBy: (ICGGameItem*)actor;
+
 -(void)     drawInRect: (NSRect)imgBox;
 -(BOOL)     mouseDownAtPoint: (NSPoint)pos modifiers: (NSEventModifierFlags)mods;
 -(CGFloat)  distanceToItem: (ICGGameItem*)otherItem;

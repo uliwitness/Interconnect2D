@@ -19,6 +19,11 @@
 @property (strong) ICGAnimation  *   upWalkAnimation;
 @property (strong) ICGAnimation  *   downWalkAnimation;
 
+@property (readonly) NSArray     *   inventoryItems;    // Array of ICGGameItem.
+
 @property (strong,nonatomic) ICGConversation*  playerConversation;
+
+-(void) addInventoryItem: (ICGGameItem *)obj;
+-(void) removeInventoryItem: (ICGGameItem *)obj;
 
 @end

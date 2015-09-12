@@ -11,6 +11,14 @@
 #import "ICGConversation.h"
 
 
+@interface ICGActor ()
+{
+    NSMutableArray* _inventoryItems;
+}
+
+@end
+
+
 @implementation ICGActor
 
 -(id)   initWithCoder: (NSCoder *)aDecoder
@@ -24,6 +32,9 @@
         self.downWalkAnimation = [aDecoder decodeObjectForKey: @"ICGDownWalkAnimation"];
         
         self.playerConversation = [aDecoder decodeObjectForKey: @"ICGPlayerConversation"];
+        _inventoryItems = [[aDecoder decodeObjectForKey: @"ICGInventoryItems"] mutableCopy];
+        if( !_inventoryItems )
+            _inventoryItems = [NSMutableArray array];
     }
     
     return self;
@@ -40,6 +51,25 @@
     [aCoder encodeObject: self.downWalkAnimation forKey: @"ICGDownWalkAnimation"];
     
     [aCoder encodeObject: self.playerConversation forKey: @"ICGPlayerConversation"];
+    [aCoder encodeObject: self.inventoryItems forKey: @"ICGInventoryItems"];
+}
+
+
+-(NSArray*) inventoryItems
+{
+    return _inventoryItems;
+}
+
+
+-(void) addInventoryItem: (ICGGameItem *)obj
+{
+    [_inventoryItems addObject: obj];
+}
+
+
+-(void) removeInventoryItem: (ICGGameItem *)obj
+{
+    [_inventoryItems removeObject: obj];
 }
 
 
