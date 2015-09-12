@@ -406,8 +406,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="1280" height="720"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <customView misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="asD-Ap-SeY" customClass="ICGGameView">
-                        <rect key="frame" x="0.0" y="-360" width="1920" height="1080"/>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="asD-Ap-SeY" customClass="ICGGameView">
+                        <rect key="frame" x="0.0" y="0.0" width="1280" height="720"/>
                     </customView>
                 </subviews>
                 <constraints>
@@ -428,8 +428,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="260" height="144"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jth-cX-V0s">
-                        <rect key="frame" x="0.0" y="-234" width="644" height="378"/>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Jth-cX-V0s">
+                        <rect key="frame" x="0.0" y="0.0" width="260" height="144"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="KRD-XE-yec"/>
                     </imageView>
                 </subviews>
