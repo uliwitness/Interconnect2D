@@ -328,7 +328,7 @@ static int ICGLuaExposedObjectCallMethod( lua_State *luaState )
     const char* retType = [sig methodReturnType];
     if( strcmp(retType, "@") == 0 )
     {
-        id  obj = nil;
+        __unsafe_unretained id  obj = nil;
         [inv getReturnValue: &obj];
         if( [obj respondsToSelector: @selector(pushIntoContext:)] )
         {
