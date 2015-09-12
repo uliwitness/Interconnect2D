@@ -78,6 +78,8 @@
 		55069C141B813CBC00CDD0DB /* InterconnectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InterconnectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		55069C191B813CBC00CDD0DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55069C1A1B813CBC00CDD0DB /* InterconnectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InterconnectTests.m; sourceTree = "<group>"; };
+		5507905C1BA2D98A00C6BBB8 /* ICGConversation+ICGConversationMemoryDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ICGConversation+ICGConversationMemoryDebug.h"; sourceTree = "<group>"; };
+		5507905D1BA2D98A00C6BBB8 /* ICGConversation+ICGConversationMemoryDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ICGConversation+ICGConversationMemoryDebug.m"; sourceTree = "<group>"; };
 		554509451B87FE010037DCF5 /* SterntalerWalkAnimation1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation1.png; sourceTree = SOURCE_ROOT; };
 		554509461B87FE010037DCF5 /* SterntalerWalkAnimationR1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimationR1.png; sourceTree = SOURCE_ROOT; };
 		554509471B87FE010037DCF5 /* SterntalerWalkAnimation2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SterntalerWalkAnimation2.png; sourceTree = SOURCE_ROOT; };
@@ -217,6 +219,8 @@
 				557DBEEB1B88A3F200470F05 /* ICGAnimation.m */,
 				557DBEFF1B9104FF00470F05 /* ICGConversation.h */,
 				557DBF001B9104FF00470F05 /* ICGConversation.m */,
+				5507905C1BA2D98A00C6BBB8 /* ICGConversation+ICGConversationMemoryDebug.h */,
+				5507905D1BA2D98A00C6BBB8 /* ICGConversation+ICGConversationMemoryDebug.m */,
 				557DBEFC1B8B9CDC00470F05 /* ICGLuaExposedObject.h */,
 				557DBEFD1B8B9CDC00470F05 /* ICGLuaExposedObject.m */,
 				55DF4ED91B935227006AAA92 /* ICGLuaScriptOwningObject.h */,
