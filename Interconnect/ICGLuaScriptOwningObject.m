@@ -93,7 +93,24 @@
     }
     int     pcount = (int)inParamStrings.count;
     for( NSString* currParam in inParamStrings )
-        lua_pushstring( luaState, currParam.UTF8String );   // Push each param on the stack.
+    {
+        if( [currParam respondsToSelector: @selector(pushIntoContext:)] )
+            [(id)currParam pushIntoContext: luaState];
+        else if( [currParam isKindOfClass: NSValue.class] && strcmp([(id)currParam objCType],"d") == 0 )
+        {
+            lua_pushnumber( luaState, [(id)currParam doubleValue] );
+        }
+        else if( [currParam isKindOfClass: NSValue.class] && strcmp([(id)currParam objCType],"f") == 0 )
+        {
+            lua_pushnumber( luaState, [(id)currParam floatValue] );
+        }
+        else if( [currParam isKindOfClass: NSValue.class] )
+        {
+            lua_pushinteger( luaState, [(id)currParam integerValue] );
+        }
+        else
+            lua_pushstring( luaState, currParam.UTF8String );   // Push each param on the stack.
+    }
     int s = lua_pcall( luaState, pcount, LUA_MULTRET, 0 );	// Tell Lua to expect pcount params & run it.
     if( s != 0 )
     {
@@ -107,12 +124,20 @@
     for( int x = 0; x < numResults; x++ )
     {
         int currSlot = (numResults -x);
-        const char* str = lua_tostring(luaState, currSlot);
-        if( !str && lua_type(luaState, currSlot) == LUA_TNIL )
-            str = "nil";
-        else if( !str )
-            str = (lua_toboolean(luaState, currSlot) ? "true" : "false");
-        [array addObject: [NSString stringWithUTF8String: str]];
+        int theType = lua_type(luaState, currSlot);
+        if( theType == LUA_TNIL )
+            [array addObject: [NSNull null]];
+        else if( theType == LUA_TNUMBER )
+            [array addObject: @(lua_tonumber( luaState, currSlot))];
+        else if( theType == LUA_TBOOLEAN )
+        {
+            [array addObject: @(lua_toboolean(luaState, currSlot))];
+        }
+        else
+        {
+            const char* str = lua_tostring(luaState, currSlot);
+            [array addObject: [NSString stringWithUTF8String: str]];
+        }
     }
     lua_pop( luaState, numResults );
     return array;
